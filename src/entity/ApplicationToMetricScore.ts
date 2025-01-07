@@ -19,5 +19,4 @@ export class ApplicationToMetricScore {
 
   @Column('float') // Assuming the score is a floating-point number
   score: number;
-
 }

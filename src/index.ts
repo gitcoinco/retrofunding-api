@@ -14,8 +14,6 @@ import { createLogger } from '@/logger';
 import { postgraphileMiddleware } from '@/postgraphile.config';
 import { BaseError } from '@/errors';
 import { execSync } from 'child_process';
-import { getRepository } from 'typeorm';
-import { Metrics } from './entity/Metrics';
 
 // Configure process-level error handlers before app initialization
 process.on('unhandledRejection', (reason: any) => {
@@ -43,20 +41,30 @@ app.get('/', (req, res) => {
     status: 'Ready to run a retrofunding campaign!',
     data: {
       current_task: 'Participate in the retrofunding campaign 🚀',
-      next_step: 'Allocate your votes to the projects that matter most to you 🎯',
+      next_step:
+        'Allocate your votes to the projects that matter most to you 🎯',
       metrics: ['Impact', 'Innovation', 'Feasibility'],
       projects: [
-        { name: 'Project Alpha', scores: { Impact: 85, Innovation: 90, Feasibility: 80 } },
-        { name: 'Project Beta', scores: { Impact: 78, Innovation: 85, Feasibility: 88 } },
-        { name: 'Project Gamma', scores: { Impact: 92, Innovation: 88, Feasibility: 75 } },
+        {
+          name: 'Project Alpha',
+          scores: { Impact: 85, Innovation: 90, Feasibility: 80 },
+        },
+        {
+          name: 'Project Beta',
+          scores: { Impact: 78, Innovation: 85, Feasibility: 88 },
+        },
+        {
+          name: 'Project Gamma',
+          scores: { Impact: 92, Innovation: 88, Feasibility: 75 },
+        },
       ],
     },
     tips: [
       'Consider which metrics are most important to you when voting! 🗳️',
-      'Review each project\'s scores across different metrics! 📊',
+      "Review each project's scores across different metrics! 📊",
       'Your votes help determine funding allocation! 💰',
     ],
-    joke: "Why did the project manager bring a ladder to the retrofunding campaign? Because they wanted to reach new heights in metrics! 🪜",
+    joke: 'Why did the project manager bring a ladder to the retrofunding campaign? Because they wanted to reach new heights in metrics! 🪜',
   });
 });
 

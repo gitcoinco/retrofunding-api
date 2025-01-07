@@ -1,11 +1,16 @@
-import { Column, Entity, ManyToMany, ManyToOne, PrimaryGeneratedColumn, Unique } from "typeorm";
-import { Application } from "./Application";
-import { Metric } from "./Metric";
+import {
+  Column,
+  Entity,
+  ManyToOne,
+  PrimaryGeneratedColumn,
+  Unique,
+} from 'typeorm';
+import { Application } from './Application';
+import { Metric } from './Metric';
 
 @Entity()
-@Unique(['allocator']) 
+@Unique(['allocator'])
 export class Allocation {
-
   @PrimaryGeneratedColumn()
   id: number;
 

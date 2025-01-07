@@ -1,5 +1,5 @@
-import { Seeder } from '@jorgebodega/typeorm-seeding';
-import { DataSource } from 'typeorm';
+import { type Seeder } from '@jorgebodega/typeorm-seeding';
+import { type DataSource } from 'typeorm';
 import { Metric, Priority } from '../entity/Metric';
 
 export default class CreateMetricsSeed implements Seeder {
@@ -7,13 +7,15 @@ export default class CreateMetricsSeed implements Seeder {
     const metricsData = [
       {
         name: 'Impact',
-        description: 'The potential effect of the project on the community or industry.',
+        description:
+          'The potential effect of the project on the community or industry.',
         priority: Priority.Ascending,
         active: true,
       },
       {
         name: 'Innovation',
-        description: 'The level of originality and creativity in the project approach.',
+        description:
+          'The level of originality and creativity in the project approach.',
         priority: Priority.Descending,
         active: true,
       },

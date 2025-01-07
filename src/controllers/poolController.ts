@@ -6,10 +6,8 @@ import { createLogger } from '@/logger';
 import {
   indexerClient,
   type RoundWithApplications as IndexerRoundWithApplications,
-  type RoundMetadata as IndexerRoundMetadata,
 } from '@/ext/indexer';
 
-import { type Pool } from '@/entity/Pool';
 import { IsNullError, NotFoundError } from '@/errors';
 
 const logger = createLogger();
@@ -77,7 +75,6 @@ export const syncPool = async (req: Request, res: Response): Promise<void> => {
   logger.info('successfully synced pool', pool);
   res.status(200).json({ message: 'pool synced successfully' });
 };
-
 
 const updateApplications = async (
   chainId: number,

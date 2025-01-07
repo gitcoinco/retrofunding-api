@@ -1,6 +1,13 @@
-import { Column, Entity, OneToMany, ManyToMany, PrimaryGeneratedColumn, Unique } from "typeorm";
-import { Allocation } from "./Allocation";
-import { Pool } from "./Pool";
+import {
+  Column,
+  Entity,
+  OneToMany,
+  ManyToMany,
+  PrimaryGeneratedColumn,
+  Unique,
+} from 'typeorm';
+import { Allocation } from './Allocation';
+import { Pool } from './Pool';
 
 export enum Priority {
   Ascending = 'ascending',
@@ -8,7 +15,7 @@ export enum Priority {
 }
 
 @Entity()
-@Unique(['name']) 
+@Unique(['name'])
 export class Metric {
   @PrimaryGeneratedColumn()
   id: number;
@@ -20,8 +27,8 @@ export class Metric {
   description: string;
 
   @Column({
-    type: "enum",
-    enum: Priority, 
+    type: 'enum',
+    enum: Priority,
   })
   priority: Priority;
 
@@ -33,6 +40,6 @@ export class Metric {
   @OneToMany(() => Allocation, allocation => allocation.metric)
   allocations: Allocation[];
 
-  @ManyToMany(() => Pool, pool => pool.metrics) 
+  @ManyToMany(() => Pool, pool => pool.metrics)
   pools: Pool[];
 }
