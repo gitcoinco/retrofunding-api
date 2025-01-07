@@ -14,6 +14,8 @@ import { createLogger } from '@/logger';
 import { postgraphileMiddleware } from '@/postgraphile.config';
 import { BaseError } from '@/errors';
 import { execSync } from 'child_process';
+import { getRepository } from 'typeorm';
+import { Metrics } from './entity/Metrics';
 
 // Configure process-level error handlers before app initialization
 process.on('unhandledRejection', (reason: any) => {

@@ -27,7 +27,6 @@ class PoolService {
       pool = await this.savePool({
         chainId,
         alloPoolId,
-        questions: [],
         applications: [],
       });
     }

@@ -4,7 +4,9 @@ import {
   Entity,
   ManyToOne,
   Unique,
+  OneToMany,
 } from 'typeorm';
+import { Allocation } from './Allocation';
 import { Pool } from '@/entity/Pool';
 
 @Entity()
@@ -23,6 +25,11 @@ export class Application {
     onDelete: 'CASCADE',
   })
   pool: Pool;
+
+  @OneToMany(() => Allocation, allocation => allocation.application, {
+    onDelete: 'CASCADE',
+  })
+  allocations: Allocation[];
 
   @Column() // Explicitly define the foreign key column for pool
   poolId: number;

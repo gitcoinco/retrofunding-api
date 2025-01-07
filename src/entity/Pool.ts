@@ -4,8 +4,10 @@ import {
   Entity,
   OneToMany,
   Unique,
+  ManyToMany,
 } from 'typeorm';
 import { Application } from '@/entity/Application';
+import { Metric } from './Metric';
 
 @Entity()
 @Unique(['chainId', 'alloPoolId'])
@@ -21,4 +23,7 @@ export class Pool {
 
   @OneToMany(() => Application, application => application.pool)
   applications: Application[];
+
+  @ManyToMany(() => Metric, metric => metric.pools)
+  metrics: Metric[];
 }
