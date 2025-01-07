@@ -60,8 +60,18 @@
 - Postgraphile endpoint is hosted at `http://localhost:3000/graphiql`
 
 ```
-POST Endpoint
-------
-router.post('/pools', syncPool);
-router.post('/allocations', allocations)
+Needed API calls
+----------------
+POST/ pool (create and sync pool) 
+POST/ allocations (save allocations)
+POST/ allocations/predict ( prediction allocation )
+
+Admin calls 
+-----------
+POST/ metrics
+POST/ application-metric-scores
+
+Nice to have 
+-------------
+POST/ pool/calculate-distribution ( this will be internally called when allocation is called
 ```
