@@ -1,7 +1,7 @@
 import { type Request, type Response } from 'express';
 import metricService from '@/service/MetricService';
 import { catchError, validateRequest } from '@/utils';
-import { type Metric, Priority } from '@/entity/Metric';
+import { type Metric, MetricOrientation } from '@/entity/Metric';
 import { BadRequestError, IsNullError } from '@/errors';
 import { createLogger } from '@/logger';
 
@@ -13,8 +13,8 @@ const isMetric = (obj: any): obj is Metric => {
     typeof obj === 'object' &&
     typeof obj.name === 'string' &&
     typeof obj.description === 'string' &&
-    (obj.priority === Priority.Ascending ||
-      obj.priority === Priority.Descending) &&
+    (obj.orientation === MetricOrientation.Increase ||
+      obj.orientation === MetricOrientation.Decrease) &&
     typeof obj.active === 'boolean'
   );
 };

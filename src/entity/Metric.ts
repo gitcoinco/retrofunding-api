@@ -1,8 +1,8 @@
 import { Column, Entity, PrimaryGeneratedColumn, Unique } from 'typeorm';
 
-export enum Priority {
-  Ascending = 'ascending',
-  Descending = 'descending',
+export enum MetricOrientation {
+  Increase = 'increase',
+  Decrease = 'decrease',
 }
 
 @Entity()
@@ -19,9 +19,9 @@ export class Metric {
 
   @Column({
     type: 'enum',
-    enum: Priority,
+    enum: MetricOrientation,
   })
-  priority: Priority;
+  orientation: MetricOrientation;
 
   @Column({
     default: false,

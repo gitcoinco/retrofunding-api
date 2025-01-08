@@ -1,25 +1,31 @@
-import { Entity, PrimaryGeneratedColumn, ManyToOne, Column } from 'typeorm';
+import {
+  Entity,
+  PrimaryGeneratedColumn,
+  Column,
+  Unique,
+  OneToMany,
+} from 'typeorm';
 import { Metric } from './Metric';
 
 @Entity()
+@Unique(['identifier', 'metricId'])
 export class ApplicationToMetricScore {
   @PrimaryGeneratedColumn()
   id: number;
 
   @Column()
-  identifier: string; // TODO: Decoupled identifier (userAddress, profile ID, etc.)
+  identifier: string; // Using alloProfileId for now
 
-  @ManyToOne(() => Metric, metric => metric, {
-    onDelete: 'CASCADE',
-  })
+  // Unidirectional relation
+  @OneToMany(() => Metric, { eager: true })
   metric: Metric;
 
   @Column('float')
   score: number;
 
-  @Column({ default: true })
-  latest: boolean;
-
   @Column({ type: 'timestamp', default: () => 'CURRENT_TIMESTAMP' })
   updatedAt: Date;
+
+  @Column()
+  metricId: number; // Explicitly define the foreign key column for pool
 }

@@ -25,11 +25,11 @@ const router = Router();
  *                   type: string
  *                   description: Description of the metric
  *                   example: "Measures how users interact with the application"
- *                 priority:
+ *                 orientation:
  *                   type: string
- *                   enum: [ascending, descending]
+ *                   enum: [increase, decrease]
  *                   description: Priority of the metric
- *                   example: "ascending"
+ *                   example: "increase"
  *                 active:
  *                   type: boolean
  *                   description: Whether the metric is active
@@ -37,7 +37,7 @@ const router = Router();
  *             required:
  *               - name
  *               - description
- *               - priority
+ *               - orientation
  *               - active
  *     responses:
  *       201:
