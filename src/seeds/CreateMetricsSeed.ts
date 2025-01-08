@@ -6,22 +6,20 @@ export default class CreateMetricsSeed implements Seeder {
   public async run(dataSource: DataSource): Promise<void> {
     const metricsData = [
       {
-        name: 'Impact',
-        description:
-          'The potential effect of the project on the community or industry.',
+        name: 'Txn Number',
+        description: 'Number of transactions made for project',
         priority: MetricOrientation.Increase,
         active: true,
       },
       {
-        name: 'Innovation',
-        description:
-          'The level of originality and creativity in the project approach.',
-        priority: MetricOrientation.Decrease,
+        name: 'Age',
+        description: 'Age of the project',
+        priority: MetricOrientation.Increase,
         active: true,
       },
       {
-        name: 'Feasibility',
-        description: 'The practicality and achievability of the project goals.',
+        name: 'Twitter Followers',
+        description: 'Number of Twitter followers',
         orientation: MetricOrientation.Increase,
         active: false,
       },
