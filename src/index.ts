@@ -62,7 +62,7 @@ app.get('/', (req, res) => {
     tips: [
       'Consider which metrics are most important to you when voting! 🗳️',
       "Review each project's scores across different metrics! 📊",
-      'Your votes help determine funding allocation! 💰',
+      'Your votes help determine funding projects! 💰',
     ],
     joke: 'Why did the project manager bring a ladder to the retrofunding campaign? Because they wanted to reach new heights in metrics! 🪜',
   });

@@ -63,8 +63,8 @@
 Needed API calls
 ----------------
 POST/ pool (create and sync pool) 
-POST/ allocations (save allocations)
-POST/ allocations/predict ( prediction allocation )
+POST/ pool/distribution/predict ( prediction distribution )
+POST/ vote     (save votes)
 
 Admin calls 
 -----------
@@ -73,5 +73,6 @@ POST/ application-metric-scores
 
 Nice to have 
 -------------
-POST/ pool/calculate-distribution ( this will be internally called when allocation is called
+POST/ pool/distribution/calculate (this will be internally called when vote is called)
+
 ```

@@ -6,7 +6,7 @@ import {
   Unique,
   ManyToMany,
 } from 'typeorm';
-import { Allocation } from './Allocation';
+import { Vote } from './Vote';
 import { Application } from '@/entity/Application';
 import { Metric } from './Metric';
 
@@ -29,6 +29,6 @@ export class Pool {
   @ManyToMany(() => Metric, { eager: true })
   metrics: Metric[];
 
-  @OneToMany(() => Allocation, allocation => allocation.pool)
-  allocations: Allocation[];
+  @OneToMany(() => Vote, vote => vote.pool)
+  votes: Vote[];
 }

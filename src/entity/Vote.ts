@@ -8,13 +8,13 @@ import {
 import { Pool } from './Pool';
 
 @Entity()
-@Unique(['poolId', 'allocator'])
-export class Allocation {
+@Unique(['poolId', 'voter'])
+export class Vote {
   @PrimaryGeneratedColumn()
   id: number;
 
   @Column({ length: 42 })
-  allocator: string;
+  voter: string;
 
   @Column()
   alloPoolId: number;
@@ -25,10 +25,10 @@ export class Allocation {
   @Column('simple-json')
   ballot: Array<{
     metricId: number;
-    allocationPercentage: number;
+    voteShare: number; // Percentage of the total vote allocated to this metric
   }>;
 
-  @ManyToOne(() => Pool, pool => pool.allocations)
+  @ManyToOne(() => Pool, pool => pool.votes)
   pool: Pool;
 
   @Column() // Explicitly define the foreign key column for pool
