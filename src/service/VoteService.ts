@@ -14,15 +14,14 @@ class VoteService {
     if (existingVote) {
       // Update existing vote
       voteRepository.merge(existingVote, voteData);
-      return await voteRepository.save(existingVote);  
+      return await voteRepository.save(existingVote);
     }
 
     // Create new vote
     const newVote = voteRepository.create(voteData);
     return await voteRepository.save(newVote);
   }
-
 }
 
 const voteService = new VoteService();
-export default voteService; 
+export default voteService;

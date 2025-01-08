@@ -20,11 +20,11 @@ const isValidVote = (obj: any): obj is Partial<Vote> => {
     typeof obj.chainId !== 'number' ||
     !Array.isArray(obj.ballot) ||
     obj.ballot.some(
-        (item: BallotItem) =>
+      (item: BallotItem) =>
         typeof item.metricId !== 'number' || typeof item.voteShare !== 'number'
     )
   );
-}
+};
 
 /**
  * Submits a vote for a given pool
@@ -32,7 +32,10 @@ const isValidVote = (obj: any): obj is Partial<Vote> => {
  * @param req - Express request object
  * @param res - Express response object
  */
-export const submitVote = async (req: Request, res: Response): Promise<void> => {
+export const submitVote = async (
+  req: Request,
+  res: Response
+): Promise<void> => {
   // Validate the incoming request
   validateRequest(req, res);
 
@@ -77,11 +80,15 @@ export const submitVote = async (req: Request, res: Response): Promise<void> => 
     if (error instanceof BadRequestError) {
       res.status(400).json({ message: error.message });
     } else {
-      res.status(500).json({ message: 'Error submitting vote', error: error?.message });
+      res
+        .status(500)
+        .json({ message: 'Error submitting vote', error: error?.message });
     }
     return;
   }
 
   logger.info('Vote submitted successfully', result);
-  res.status(201).json({ message: 'Vote submitted successfully', data: result });
-}; 
+  res
+    .status(201)
+    .json({ message: 'Vote submitted successfully', data: result });
+};

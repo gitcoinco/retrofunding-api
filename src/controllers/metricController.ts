@@ -13,7 +13,8 @@ const isMetric = (obj: any): obj is Metric => {
     typeof obj === 'object' &&
     typeof obj.name === 'string' &&
     typeof obj.description === 'string' &&
-    (obj.priority === Priority.Ascending || obj.priority === Priority.Descending) &&
+    (obj.priority === Priority.Ascending ||
+      obj.priority === Priority.Descending) &&
     typeof obj.active === 'boolean'
   );
 };
