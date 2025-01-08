@@ -8,16 +8,19 @@ import { createLogger } from '@/logger';
 const logger = createLogger();
 
 // Function to validate if an object is a Metric
-function isMetric(obj: any): obj is Metric {
+const isMetric = (obj: any): obj is Metric => {
   return (
     typeof obj === 'object' &&
     typeof obj.name === 'string' &&
     typeof obj.description === 'string' &&
-    (obj.priority === Priority.Ascending ||
-      obj.priority === Priority.Descending) &&
+    (obj.priority === Priority.Ascending || obj.priority === Priority.Descending) &&
     typeof obj.active === 'boolean'
   );
-}
+};
+
+const isValidMetricsData = (data: any): data is Metric[] => {
+  return Array.isArray(data) && data.every(isMetric);
+};
 
 export const addMetrics = async (
   req: Request,
@@ -29,7 +32,7 @@ export const addMetrics = async (
   const data = req.body;
 
   // Combined validation to check if req.body is Metric[]
-  if (!Array.isArray(data) || !data.every(isMetric)) {
+  if (!isValidMetricsData(data)) {
     res.status(400).json({ message: 'Bad Request' });
     throw new BadRequestError('Bad Request');
   }
