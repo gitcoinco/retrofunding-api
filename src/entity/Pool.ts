@@ -4,11 +4,13 @@ import {
   Entity,
   OneToMany,
   Unique,
+  OneToOne,
   ManyToMany,
 } from 'typeorm';
-import { Vote } from './Vote';
 import { Application } from '@/entity/Application';
 import { Metric } from './Metric';
+import { EligibilityCriteria } from './EligibilityCriteria';
+import { Vote } from './Vote';
 
 @Entity()
 @Unique(['chainId', 'alloPoolId'])
@@ -22,11 +24,16 @@ export class Pool {
   @Column()
   alloPoolId: string;
 
+  @OneToOne(
+    () => EligibilityCriteria,
+    eligibilityCriteria => eligibilityCriteria.pool
+  )
+  eligibilityCriteria: EligibilityCriteria;
+
   @OneToMany(() => Application, application => application.pool)
   applications: Application[];
 
-  // Unidirectional relation
-  @ManyToMany(() => Metric, { eager: true })
+  @ManyToMany(() => Metric, { eager: true }) // Unidirectional relation
   metrics: Metric[];
 
   @OneToMany(() => Vote, vote => vote.pool)

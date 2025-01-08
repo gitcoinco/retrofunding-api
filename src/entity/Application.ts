@@ -20,7 +20,7 @@ export class Application {
   alloApplicationId: string;
 
   @Column()
-  alloProfileId: string; // TODO: check if needed
+  alloProfileId: string;
 
   @ManyToOne(() => Pool, pool => pool.applications, {
     onDelete: 'CASCADE',

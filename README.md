@@ -64,11 +64,9 @@ Needed API calls
 ----------------
 POST/ pool (create and sync pool) 
 POST/ pool/distribution/predict ( prediction distribution )
-POST/ vote     (save votes)
 
 Admin calls 
 -----------
-POST/ metrics
 POST/ application-metric-scores
 
 Nice to have 
