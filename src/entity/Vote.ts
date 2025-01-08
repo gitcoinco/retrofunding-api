@@ -17,7 +17,7 @@ export class Vote {
   voter: string;
 
   @Column()
-  alloPoolId: number;
+  alloPoolId: string;
 
   @Column()
   chainId: number;
