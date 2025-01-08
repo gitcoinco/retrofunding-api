@@ -64,8 +64,7 @@
     "revert": "npm run typeorm -- migration:revert -d src/data-source.ts",
     "revert:fake": "npm run typeorm -- migration:revert -d src/data-source.ts --fake",
     "prepare": "husky",
-    "seed:metrics": "ts-node ./node_modules/.bin/typeorm-seeding seed -s src/seeds/CreateMetricsSeed.ts",
-    "seed:application_to_metric_score": "ts-node ./node_modules/.bin/typeorm-seeding seed -s src/seeds/CreateApplicationToMetricScoreSeed.ts"
+    "seed:metrics": "ts-node ./node_modules/@jorgebodega/typeorm-seeding/dist/cli.js -d src/data-source.ts seed src/seeders/MetricSeeder.ts"
   },
   "lint-staged": {
     "src/**/!(index).ts": [

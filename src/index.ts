@@ -39,26 +39,6 @@ app.get('/', (req, res) => {
     apis: '/api-docs',
     graphiql: '/graphiql',
     status: 'Ready to run a retrofunding campaign!',
-    data: {
-      current_task: 'Participate in the retrofunding campaign 🚀',
-      next_step:
-        'Allocate your votes to the projects that matter most to you 🎯',
-      metrics: ['Impact', 'Innovation', 'Feasibility'],
-      projects: [
-        {
-          name: 'Project Alpha',
-          scores: { Impact: 85, Innovation: 90, Feasibility: 80 },
-        },
-        {
-          name: 'Project Beta',
-          scores: { Impact: 78, Innovation: 85, Feasibility: 88 },
-        },
-        {
-          name: 'Project Gamma',
-          scores: { Impact: 92, Innovation: 88, Feasibility: 75 },
-        },
-      ],
-    },
     tips: [
       'Consider which metrics are most important to you when voting! 🗳️',
       "Review each project's scores across different metrics! 📊",
