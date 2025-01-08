@@ -6,6 +6,7 @@ import {
   Unique,
   ManyToMany,
 } from 'typeorm';
+import { Allocation } from './Allocation';
 import { Application } from '@/entity/Application';
 import { Metric } from './Metric';
 
@@ -24,6 +25,10 @@ export class Pool {
   @OneToMany(() => Application, application => application.pool)
   applications: Application[];
 
-  @ManyToMany(() => Metric, metric => metric.pools)
+  // Unidirectional relation
+  @ManyToMany(() => Metric, { eager: true })
   metrics: Metric[];
+
+  @OneToMany(() => Allocation, allocation => allocation.pool)
+  allocations: Allocation[];
 }

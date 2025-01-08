@@ -5,11 +5,10 @@ import {
   PrimaryGeneratedColumn,
   Unique,
 } from 'typeorm';
-import { Application } from './Application';
-import { Metric } from './Metric';
+import { Pool } from './Pool';
 
 @Entity()
-@Unique(['allocator'])
+@Unique(['poolId', 'allocator'])
 export class Allocation {
   @PrimaryGeneratedColumn()
   id: number;
@@ -18,17 +17,20 @@ export class Allocation {
   allocator: string;
 
   @Column()
-  allocationPercentage: number;
+  alloPoolId: number;
 
-  @ManyToOne(() => Application, application => application.allocations)
-  application: Application;
+  @Column()
+  chainId: number;
 
-  @ManyToOne(() => Metric, metric => metric.allocations)
-  metric: Metric;
+  @Column('simple-json')
+  ballot: Array<{
+    metricId: number;
+    allocationPercentage: number;
+  }>;
 
-  @Column() // Explicitly define the foreign key column for application
-  applicationId: number;
+  @ManyToOne(() => Pool, pool => pool.allocations)
+  pool: Pool;
 
-  @Column() // Explicitly define the foreign key column for metric
-  metricId: number;
+  @Column() // Explicitly define the foreign key column for pool
+  poolId: number;
 }

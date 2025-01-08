@@ -1,13 +1,4 @@
-import {
-  Column,
-  Entity,
-  OneToMany,
-  ManyToMany,
-  PrimaryGeneratedColumn,
-  Unique,
-} from 'typeorm';
-import { Allocation } from './Allocation';
-import { Pool } from './Pool';
+import { Column, Entity, PrimaryGeneratedColumn, Unique } from 'typeorm';
 
 export enum Priority {
   Ascending = 'ascending',
@@ -35,11 +26,5 @@ export class Metric {
   @Column({
     default: false,
   })
-  active: boolean;
-
-  @OneToMany(() => Allocation, allocation => allocation.metric)
-  allocations: Allocation[];
-
-  @ManyToMany(() => Pool, pool => pool.metrics)
-  pools: Pool[];
+  enabled: boolean;
 }
