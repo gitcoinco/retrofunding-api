@@ -3,7 +3,7 @@ import {
   PrimaryGeneratedColumn,
   Column,
   Unique,
-  OneToMany,
+  ManyToOne,
 } from 'typeorm';
 import { Metric } from './Metric';
 
@@ -17,7 +17,7 @@ export class ApplicationToMetricScore {
   identifier: string; // Using alloProfileId for now
 
   // Unidirectional relation
-  @OneToMany(() => Metric, { eager: true })
+  @ManyToOne(() => Metric, { eager: true })
   metric: Metric;
 
   @Column('float')

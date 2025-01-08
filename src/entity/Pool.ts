@@ -5,6 +5,7 @@ import {
   OneToMany,
   Unique,
   OneToOne,
+  ManyToMany,
 } from 'typeorm';
 import { Application } from '@/entity/Application';
 import { Metric } from './Metric';
@@ -32,7 +33,7 @@ export class Pool {
   @OneToMany(() => Application, application => application.pool)
   applications: Application[];
 
-  @OneToMany(() => Metric, { eager: true }) // Unidirectional relation
+  @ManyToMany(() => Metric, { eager: true }) // Unidirectional relation
   metrics: Metric[];
 
   @OneToMany(() => Vote, vote => vote.pool)
