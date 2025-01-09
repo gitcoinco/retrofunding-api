@@ -1,5 +1,9 @@
+import { EligibilityType } from '@/entity/EligibilityCriteria';
 import { type Pool } from '@/entity/Pool';
+import { AlreadyExistsError } from '@/errors';
 import { poolRepository } from '@/repository';
+import eligibilityCriteriaService from './EligibilityCriteriaService';
+import metricService from './MetricService';
 
 class PoolService {
   async savePool(pool: Partial<Pool>): Promise<Pool> {
@@ -21,16 +25,39 @@ class PoolService {
     return pool;
   }
 
-  async upsertPool(chainId: number, alloPoolId: string): Promise<Pool> {
-    let pool = await this.getPoolByChainIdAndAlloPoolId(chainId, alloPoolId);
-    if (pool == null) {
-      pool = await this.savePool({
-        chainId,
-        alloPoolId,
-        applications: [],
-      });
+  async createNewPool(
+    chainId: number,
+    alloPoolId: string,
+    eligibilityType: EligibilityType,
+    eligibilityData: object,
+    metricsIds: number[]
+  ): Promise<Pool> {
+
+    let eligibilityCriteria = await eligibilityCriteriaService.getEligibilityCriteriaByChainIdAndAlloPoolId(chainId, alloPoolId);
+    if (eligibilityCriteria != null) {
+      throw new AlreadyExistsError(`Eligibility criteria already exists`);
     }
-    return pool;
+
+    eligibilityCriteria = await eligibilityCriteriaService.saveEligibilityCriteria({
+      chainId,
+      alloPoolId,
+      eligibilityType,
+      data: eligibilityData,
+    });
+
+    let _pool = await this.getPoolByChainIdAndAlloPoolId(chainId, alloPoolId);
+    if (_pool != null) {
+      throw new AlreadyExistsError(`Pool already exists`);
+    }
+
+    const metrics = await metricService.getMetricsByIds(metricsIds);
+
+    return await this.savePool({
+      chainId,
+      alloPoolId,
+      eligibilityCriteria,
+      metrics,
+    });
   }
 
   async getAllPools(page = 1, limit = 10): Promise<Pool[]> {

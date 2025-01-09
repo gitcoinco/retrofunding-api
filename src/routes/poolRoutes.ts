@@ -1,13 +1,13 @@
-import { syncPool } from '@/controllers/poolController';
+import { createPool } from '@/controllers/poolController';
 import { Router } from 'express';
 
 const router = Router();
 
 /**
  * @swagger
- * /pools:
+ * /pool:
  *   post:
- *     summary: Syncs a pool with the given poolId and chainId from the indexer
+ *     summary: Syncs a pool with the given alloPoolId and chainId from the indexer
  *     requestBody:
  *       required: true
  *       content:
@@ -39,6 +39,6 @@ const router = Router();
  *             alloPoolId: "609"
  *             chainId: "42161"
  */
-router.post('/', syncPool);
+router.post('/', createPool);
 
 export default router;
