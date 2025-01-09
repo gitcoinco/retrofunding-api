@@ -43,9 +43,8 @@ export const createPool = async (
   const { chainId, alloPoolId, eligibilityType, eligibilityData, metricsIds } =
     req.body as CreatePoolRequest;
 
-  // Log the receipt of the update request
   logger.info(
-    `Received update request for chainId: ${chainId}, alloPoolId: ${alloPoolId}`
+    `Received create pool request for chainId: ${chainId}, alloPoolId: ${alloPoolId}`
   );
 
   // Check if the eligibility type is supported
@@ -54,8 +53,10 @@ export const createPool = async (
     throw new BadRequestError('Eligibility type not supported');
   }
 
+  // TODO: check if pool is there on indexer
+
   // ---- Get or create the pool ----
-  // Upsert the pool with the fetched data
+  // Create the pool with the fetched data
   const [error, pool] = await catchError(
     poolService.createNewPool(
       chainId,
@@ -66,16 +67,15 @@ export const createPool = async (
     )
   );
 
-  // Handle errors during the upsert operation
+  // Handle errors during the create operation
   if (error != null || pool == null) {
-    logger.error(`Failed to upsert pool: ${error?.message}`);
+    logger.error(`Failed to create pool: ${error?.message}`);
     res
       .status(500)
-      .json({ message: 'Error upserting pool', error: error?.message });
-    throw new IsNullError(`Error upserting pool`);
+      .json({ message: 'Error creating pool', error: error?.message });
+    throw new IsNullError(`Error creating pool`);
   }
 
-  // Log success and respond to the request
   logger.info('successfully created pool', pool);
   res.status(200).json({ message: 'pool created successfully' });
 };

@@ -1,23 +1,32 @@
 import {
+  Entity,
   PrimaryGeneratedColumn,
   Column,
-  Entity,
-  ManyToOne,
   Unique,
+  ManyToOne,
 } from 'typeorm';
-import { Pool } from '@/entity/Pool';
+import { Pool } from './Pool';
 
 @Entity()
-@Unique(['alloApplicationId', 'poolId'])
-export class Application {
+@Unique(['poolId'])
+export class Distribution {
   @PrimaryGeneratedColumn()
   id: number;
 
   @Column()
-  chainId: number;
+  alloPoolId: string;
 
   @Column()
-  alloApplicationId: string;
+  chainId: number;
+
+  @Column({ default: false })
+  finalized: boolean;
+
+  @Column('simple-json')
+  applicationData: Array<{
+    alloApplicationId: string;
+    distribution_percentage: number;
+  }>;
 
   @ManyToOne(() => Pool, pool => pool.applications, {
     onDelete: 'CASCADE',
