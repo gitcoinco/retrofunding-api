@@ -3,9 +3,12 @@ import poolService from '@/service/PoolService';
 import applicationService from '@/service/ApplicationService';
 import { catchError, validateRequest } from '@/utils';
 import { createLogger } from '@/logger';
-import { type RoundWithApplications as IndexerRoundWithApplications } from '@/ext/indexer';
+import {
+  indexerClient,
+  type RoundWithApplications as IndexerRoundWithApplications,
+} from '@/ext/indexer';
 
-import { BadRequestError, IsNullError } from '@/errors';
+import { BadRequestError, IsNullError, NotFoundError } from '@/errors';
 import { EligibilityType } from '@/entity/EligibilityCriteria';
 
 const logger = createLogger();
@@ -16,6 +19,11 @@ interface CreatePoolRequest {
   metricsIds: number[];
   eligibilityType: EligibilityType;
   eligibilityData: object;
+}
+
+interface SyncPoolRequest {
+  chainId: number;
+  alloPoolId: string;
 }
 
 /**
@@ -70,6 +78,52 @@ export const createPool = async (
   // Log success and respond to the request
   logger.info('successfully created pool', pool);
   res.status(200).json({ message: 'pool created successfully' });
+};
+
+/**
+ * Synchronizes a pool by fetching data from the indexer, updating the pool and it's applications
+ *
+ * @param req - Express request object
+ * @param res - Express response object
+ */
+export const syncPool = async (req: Request, res: Response): Promise<void> => {
+  // Validate the incoming request
+  validateRequest(req, res);
+
+  // Extract chainId and alloPoolId from the request body
+  const { chainId, alloPoolId } = req.body as SyncPoolRequest;
+
+  // Log the receipt of the update request
+  logger.info(
+    `Received update request for chainId: ${chainId}, alloPoolId: ${alloPoolId}`
+  );
+
+  // ---- Fetch pool data from the indexer ----
+  const [errorFetching, indexerPoolData] = await catchError(
+    indexerClient.getRoundWithApplications({
+      chainId,
+      roundId: alloPoolId,
+    })
+  );
+
+  // Handle errors or missing data from the indexer
+  if (errorFetching != null || indexerPoolData == null) {
+    logger.warn(
+      `No pool found for chainId: ${chainId}, alloPoolId: ${alloPoolId}`
+    );
+    res.status(404).json({ message: 'Pool not found on indexer' });
+    throw new NotFoundError(`Pool not found on indexer`);
+  }
+
+  // ---- Update Applications ----
+  // Update the pool with the applications from the indexer
+  await updateApplications(chainId, alloPoolId, indexerPoolData);
+
+  // Log success and respond to the request
+  logger.info(
+    `successfully synced pool, alloPoolId: ${alloPoolId} chainId: ${chainId}`
+  );
+  res.status(200).json({ message: 'pool synced successfully' });
 };
 
 const updateApplications = async (

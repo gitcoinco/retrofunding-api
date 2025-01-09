@@ -1,4 +1,4 @@
-import { EligibilityType } from '@/entity/EligibilityCriteria';
+import { type EligibilityType } from '@/entity/EligibilityCriteria';
 import { type Pool } from '@/entity/Pool';
 import { AlreadyExistsError } from '@/errors';
 import { poolRepository } from '@/repository';
@@ -32,20 +32,24 @@ class PoolService {
     eligibilityData: object,
     metricsIds: number[]
   ): Promise<Pool> {
-
-    let eligibilityCriteria = await eligibilityCriteriaService.getEligibilityCriteriaByChainIdAndAlloPoolId(chainId, alloPoolId);
+    let eligibilityCriteria =
+      await eligibilityCriteriaService.getEligibilityCriteriaByChainIdAndAlloPoolId(
+        chainId,
+        alloPoolId
+      );
     if (eligibilityCriteria != null) {
       throw new AlreadyExistsError(`Eligibility criteria already exists`);
     }
 
-    eligibilityCriteria = await eligibilityCriteriaService.saveEligibilityCriteria({
-      chainId,
-      alloPoolId,
-      eligibilityType,
-      data: eligibilityData,
-    });
+    eligibilityCriteria =
+      await eligibilityCriteriaService.saveEligibilityCriteria({
+        chainId,
+        alloPoolId,
+        eligibilityType,
+        data: eligibilityData,
+      });
 
-    let _pool = await this.getPoolByChainIdAndAlloPoolId(chainId, alloPoolId);
+    const _pool = await this.getPoolByChainIdAndAlloPoolId(chainId, alloPoolId);
     if (_pool != null) {
       throw new AlreadyExistsError(`Pool already exists`);
     }

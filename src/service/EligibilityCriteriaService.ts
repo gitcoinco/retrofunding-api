@@ -1,4 +1,4 @@
-import { EligibilityCriteria } from '@/entity/EligibilityCriteria';
+import { type EligibilityCriteria } from '@/entity/EligibilityCriteria';
 import { eligibilityCriteriaRepository } from '@/repository';
 
 class EligibilityCriteriaService {
@@ -12,7 +12,9 @@ class EligibilityCriteriaService {
     chainId: number,
     alloPoolId: string
   ): Promise<EligibilityCriteria | null> {
-    return await eligibilityCriteriaRepository.findOne({ where: { chainId, alloPoolId } });
+    return await eligibilityCriteriaRepository.findOne({
+      where: { chainId, alloPoolId },
+    });
   }
 }
 
