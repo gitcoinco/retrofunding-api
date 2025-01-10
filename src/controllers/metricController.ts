@@ -30,6 +30,8 @@ export const addMetrics = async (
   // Validate the incoming request
   validateRequest(req, res);
 
+  // TODO: ensure caller is admin
+
   const data = req.body;
 
   // Combined validation to check if req.body is Metric[]

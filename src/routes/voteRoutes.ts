@@ -20,9 +20,9 @@ const router = Router();
  *                 description: Address of the voter
  *                 example: "0x1234567890abcdef1234567890abcdef12345678"
  *               alloPoolId:
- *                 type: number
+ *                 type: string
  *                 description: The ID of the pool (from Allo) to which the vote is submitted
- *                 example: 609
+ *                 example: "609"
  *               chainId:
  *                 type: number
  *                 description: The chain ID associated with the pool

@@ -1,10 +1,9 @@
-import { Request, Response } from 'express';
+import { type Request, type Response } from 'express';
 import voteService from '@/service/VoteService';
 import poolService from '@/service/PoolService';
 import { catchError, validateRequest } from '@/utils';
 import { BadRequestError } from '@/errors';
 import { createLogger } from '@/logger';
-import { type Vote } from '@/entity/Vote';
 const logger = createLogger();
 
 // Interface for ballot items
@@ -12,19 +11,6 @@ interface BallotItem {
   metricId: number;
   voteShare: number;
 }
-
-const isValidVote = (obj: any): obj is Partial<Vote> => {
-  return (
-    typeof obj.voter !== 'string' ||
-    typeof obj.alloPoolId !== 'number' ||
-    typeof obj.chainId !== 'number' ||
-    !Array.isArray(obj.ballot) ||
-    obj.ballot.some(
-      (item: BallotItem) =>
-        typeof item.metricId !== 'number' || typeof item.voteShare !== 'number'
-    )
-  );
-};
 
 /**
  * Submits a vote for a given pool
@@ -44,7 +30,17 @@ export const submitVote = async (
       const { voter, alloPoolId, chainId, ballot } = req.body;
 
       // Validate request body
-      if (!isValidVote(req.body)) {
+      if (
+        typeof voter !== 'string' ||
+        typeof alloPoolId !== 'string' ||
+        typeof chainId !== 'number' ||
+        !Array.isArray(ballot) ||
+        ballot.some(
+          (item: BallotItem) =>
+            typeof item.metricId !== 'number' ||
+            typeof item.voteShare !== 'number'
+        )
+      ) {
         throw new BadRequestError('Invalid request data');
       }
 
@@ -54,28 +50,27 @@ export const submitVote = async (
         alloPoolId.toString()
       );
 
-      if (!pool) {
+      if (pool === null) {
         throw new BadRequestError('Pool not found');
       }
 
-      // Prepare vote data
-      const voteData = {
+      // TODO: Check if voter is eligible based on pool eligibility type
+
+      // Save the vote using VoteService
+      const savedVote = await voteService.saveVote({
         voter,
         alloPoolId,
         chainId,
         ballot,
         pool, // Associate the pool entity
         poolId: pool.id,
-      };
-
-      // Save the vote using VoteService
-      const savedVote = await voteService.saveVote(voteData);
+      });
 
       return savedVote;
     })()
   );
 
-  if (error != null || result == null) {
+  if (error !== null || result === null) {
     logger.error(`Failed to submit vote: ${error?.message}`);
     if (error instanceof BadRequestError) {
       res.status(400).json({ message: error.message });
