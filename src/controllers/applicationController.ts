@@ -4,6 +4,7 @@ import poolService from '@/service/PoolService';
 import { catchError, validateRequest } from '@/utils';
 import { IsNullError, NotFoundError } from '@/errors';
 import { createLogger } from '@/logger';
+import { indexerClient } from '@/ext/indexer';
 
 const logger = createLogger();
 
@@ -43,8 +44,22 @@ export const createApplication = async (
     res.status(404).json({ message: 'Pool not found' });
     throw new NotFoundError('Pool not found');
   }
-  // TODO: check if application is there on indexer
 
+  // Fetch application data from the indexer
+  const [errorFetching, applicationData] = await catchError(
+    indexerClient.getApplicationWithRound({
+      chainId,
+      roundId: alloPoolId,
+      applicationId: alloApplicationId,
+    })
+  );
+
+  if (errorFetching !== null || applicationData === null) {
+    res.status(404).json({ message: 'Application not found on indexer' });
+    throw new NotFoundError('Application not found on indexer');
+  }
+
+  // Create application
   const [error, application] = await catchError(
     applicationService.createApplication({
       chainId,
@@ -54,8 +69,8 @@ export const createApplication = async (
     })
   );
 
-  // Handle errors during the create operation
-  if (error != null || application == null) {
+  // Handle errors
+  if (error !== null || application === null) {
     logger.error(`Failed to create application: ${error?.message}`);
     res
       .status(500)

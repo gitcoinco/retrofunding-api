@@ -53,9 +53,20 @@ export const createPool = async (
     throw new BadRequestError('Eligibility type not supported');
   }
 
-  // TODO: check if pool is there on indexer
+  // Check if pool is there on indexer
+  const [errorFetching, indexerPoolData] = await catchError(
+    indexerClient.getRoundManager({
+      chainId,
+      alloPoolId,
+    })
+  );
 
-  // ---- Get or create the pool ----
+  if (errorFetching !== null || indexerPoolData === null) {
+    res.status(404).json({ message: 'Pool not found on indexer' });
+    throw new NotFoundError('Pool not found on indexer');
+  }
+
+  // Get or create the pool
   // Create the pool with the fetched data
   const [error, pool] = await catchError(
     poolService.createNewPool(
@@ -98,7 +109,7 @@ export const syncPool = async (req: Request, res: Response): Promise<void> => {
     `Received update request for chainId: ${chainId}, alloPoolId: ${alloPoolId}`
   );
 
-  // ---- Fetch pool data from the indexer ----
+  // Fetch pool data from the indexer
   const [errorFetching, indexerPoolData] = await catchError(
     indexerClient.getRoundWithApplications({
       chainId,
@@ -115,7 +126,7 @@ export const syncPool = async (req: Request, res: Response): Promise<void> => {
     throw new NotFoundError(`Pool not found on indexer`);
   }
 
-  // ---- Update Applications ----
+  // Update Applications
   // Update the pool with the applications from the indexer
   await updateApplications(chainId, alloPoolId, indexerPoolData);
 
