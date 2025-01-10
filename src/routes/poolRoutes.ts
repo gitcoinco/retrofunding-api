@@ -1,13 +1,13 @@
-import { syncPool } from '@/controllers/poolController';
+import { createPool, syncPool } from '@/controllers/poolController';
 import { Router } from 'express';
 
 const router = Router();
 
 /**
  * @swagger
- * /pools:
+ * /pool:
  *   post:
- *     summary: Syncs a pool with the given poolId and chainId from the indexer
+ *     summary: Creates a pool
  *     requestBody:
  *       required: true
  *       content:
@@ -39,6 +39,39 @@ const router = Router();
  *             alloPoolId: "609"
  *             chainId: "42161"
  */
-router.post('/', syncPool);
+router.post('/', createPool);
+
+/**
+ * @swagger
+ * /sync:
+ *   post:
+ *     summary: Syncs a pools applications with the given alloPoolId and chainId
+ *     requestBody:
+ *       required: true
+ *       content:
+ *         application/json:
+ *           schema:
+ *             type: object
+ *             properties:
+ *               alloPoolId:
+ *                 type: string
+ *                 description: The ID of the pool to sync
+ *                 example: "609"  # Example of poolId
+ *               chainId:
+ *                 type: number
+ *                 description: The chain ID associated with the pool
+ *                 example: 42161  # Example of chainId (Arbitrum)
+ *             required:
+ *               - alloPoolId
+ *               - chainId
+ *     responses:
+ *       200:
+ *         description: Pool synced successfully
+ *       400:
+ *         description: Invalid poolId or chainId format
+ *       500:
+ *         description: Internal server error
+ */
+router.post('/sync', syncPool);
 
 export default router;

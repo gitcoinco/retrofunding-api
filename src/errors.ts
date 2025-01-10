@@ -22,6 +22,12 @@ export class NotFoundError extends BaseError {
   }
 }
 
+export class AlreadyExistsError extends BaseError {
+  constructor(message: string) {
+    super(message, 409);
+  }
+}
+
 export class IsNullError extends BaseError {
   constructor(message: string) {
     super(message, 500);
