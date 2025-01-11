@@ -185,9 +185,10 @@ export const calculateDistributions = async (
     const isIncreasing = await isMetricIncreasing(pool.metrics, metricName);
 
     // Normalize score
-    let normalizedScore = (rawScore - minValue) / (maxValue - minValue);
+    let normalizedScore = rawScore / maxValue;
     if (!isIncreasing) {
-      normalizedScore = 1 - normalizedScore; // Invert if smaller is better
+      const POSITIVE_CONSTANT = 0.1;
+      normalizedScore = POSITIVE_CONSTANT + (1 - normalizedScore);
     }
 
     // Get vote share for the metric
