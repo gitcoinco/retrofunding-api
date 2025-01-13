@@ -12,6 +12,11 @@ import { Metric } from './Metric';
 import { EligibilityCriteria } from './EligibilityCriteria';
 import { Vote } from './Vote';
 
+export interface Distribution {
+  alloApplicationId: string;
+  distribution_percentage: number;
+}
+
 @Entity()
 @Unique(['chainId', 'alloPoolId'])
 export class Pool {
@@ -38,4 +43,10 @@ export class Pool {
 
   @OneToMany(() => Vote, vote => vote.pool)
   votes: Vote[];
+
+  @Column({ default: false })
+  finalized: boolean;
+
+  @Column('simple-json', { nullable: true })
+  distribution: Distribution[];
 }

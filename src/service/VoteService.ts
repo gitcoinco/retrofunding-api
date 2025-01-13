@@ -1,4 +1,4 @@
-import { Vote } from '@/entity/Vote';
+import { type Vote } from '@/entity/Vote';
 import { voteRepository } from '@/repository';
 
 class VoteService {
@@ -11,7 +11,7 @@ class VoteService {
       },
     });
 
-    if (existingVote) {
+    if (existingVote !== null) {
       // Update existing vote
       voteRepository.merge(existingVote, voteData);
       return await voteRepository.save(existingVote);
@@ -20,6 +20,15 @@ class VoteService {
     // Create new vote
     const newVote = voteRepository.create(voteData);
     return await voteRepository.save(newVote);
+  }
+
+  async getVotesByChainIdAndAlloPoolId(
+    chainId: number,
+    alloPoolId: string
+  ): Promise<Vote[] | null> {
+    return await voteRepository.find({
+      where: { chainId, alloPoolId },
+    });
   }
 }
 

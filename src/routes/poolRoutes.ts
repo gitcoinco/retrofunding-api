@@ -1,4 +1,9 @@
-import { createPool, syncPool } from '@/controllers/poolController';
+import {
+  createPool,
+  syncPool,
+  calculateDistribution,
+  finalizeDistribution,
+} from '@/controllers/poolController';
 import { Router } from 'express';
 
 const router = Router();
@@ -73,5 +78,61 @@ router.post('/', createPool);
  *         description: Internal server error
  */
 router.post('/sync', syncPool);
+
+/**
+ * @swagger
+ * /calculate:
+ *   post:
+ *     summary: Calculates the distribution of a pool based on chainId and alloPoolId
+ *     requestBody:
+ *       required: true
+ *       content:
+ *         application/json:
+ *           schema:
+ *             type: object
+ *             properties:
+ *               alloPoolId:
+ *                 type: string
+ *                 description: The ID of the pool to calculate
+ *                 example: "609"  # Example of poolId
+ *               chainId:
+ *                 type: number
+ *                 description: The chain ID associated with the pool
+ *                 example: 42161  # Example of chainId (Arbitrum)
+ *             required:
+ *               - alloPoolId
+ *               - chainId
+ *     responses:
+ *       200:
+ *         description: Distribution calculated successfully
+ *       400:
+ *         description: Invalid poolId or chainId format
+ *       500:
+ *         description: Internal server error
+ */
+router.post('/calculate', calculateDistribution);
+
+/**
+ * @swagger
+ * /finalize:
+ *   post:
+ *     summary: Finalizes the distribution of a pool based on chainId and alloPoolId
+ *     requestBody:
+ *       required: true
+ *       content:
+ *         application/json:
+ *           schema:
+ *             type: object
+ *             properties:
+ *               alloPoolId:
+ *                 type: string
+ *                 description: The ID of the pool to finalize
+ *                 example: "609"  # Example of poolId
+ *               chainId:
+ *                 type: number
+ *                 description: The chain ID associated with the pool
+ *                 example: 42161  # Example of chainId (Arbitrum)
+ */
+router.post('/finalize', finalizeDistribution);
 
 export default router;

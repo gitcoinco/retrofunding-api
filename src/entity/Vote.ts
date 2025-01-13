@@ -7,6 +7,12 @@ import {
 } from 'typeorm';
 import { Pool } from './Pool';
 
+export interface Ballot {
+  metricName: string;
+  metricId?: number;
+  voteShare: number; // Percentage of the total vote allocated to this metric
+}
+
 @Entity()
 @Unique(['poolId', 'voter'])
 export class Vote {
@@ -23,10 +29,7 @@ export class Vote {
   chainId: number;
 
   @Column('simple-json')
-  ballot: Array<{
-    metricId: number;
-    voteShare: number; // Percentage of the total vote allocated to this metric
-  }>;
+  ballot: Ballot[];
 
   @ManyToOne(() => Pool, pool => pool.votes)
   pool: Pool;

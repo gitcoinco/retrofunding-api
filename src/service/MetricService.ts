@@ -22,6 +22,10 @@ class MetricService {
       take: limit,
     });
   }
+
+  async getMetricsByNames(names: string[]): Promise<Metric[]> {
+    return await metricRepository.find({ where: { name: In(names) } });
+  }
 }
 
 const metricService = new MetricService();

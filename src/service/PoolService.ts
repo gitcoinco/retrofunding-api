@@ -1,6 +1,6 @@
 import { type EligibilityType } from '@/entity/EligibilityCriteria';
-import { type Pool } from '@/entity/Pool';
-import { AlreadyExistsError } from '@/errors';
+import { type Distribution, type Pool } from '@/entity/Pool';
+import { AlreadyExistsError, NotFoundError } from '@/errors';
 import { poolRepository } from '@/repository';
 import eligibilityCriteriaService from './EligibilityCriteriaService';
 import metricService from './MetricService';
@@ -69,6 +69,33 @@ class PoolService {
       skip: (page - 1) * limit,
       take: limit,
     });
+  }
+
+  async updateDistribution(
+    alloPoolId: string,
+    chainId: number,
+    distribution: Distribution[]
+  ): Promise<Pool> {
+    const pool = await this.getPoolByChainIdAndAlloPoolId(chainId, alloPoolId);
+    if (pool == null) {
+      throw new NotFoundError('Pool not found');
+    }
+
+    pool.distribution = distribution;
+    return await this.savePool(pool);
+  }
+
+  async finalizePoolDistribution(
+    alloPoolId: string,
+    chainId: number
+  ): Promise<Pool> {
+    const pool = await this.getPoolByChainIdAndAlloPoolId(chainId, alloPoolId);
+    if (pool == null) {
+      throw new NotFoundError('Pool not found');
+    }
+
+    pool.finalized = true;
+    return await this.savePool(pool);
   }
 }
 

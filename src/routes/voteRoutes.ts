@@ -1,5 +1,5 @@
 import { Router } from 'express';
-import { submitVote } from '@/controllers/voteController';
+import { submitVote, predictDistribution } from '@/controllers/voteController';
 
 const router = Router();
 
@@ -58,5 +58,56 @@ const router = Router();
  *         description: Internal server error
  */
 router.post('/', submitVote);
+
+/**
+ * @swagger
+ * /predict:
+ *   post:
+ *     summary: Predicts the distribution of a pool based on chainId and alloPoolId
+ *     requestBody:
+ *       required: true
+ *       content:
+ *         application/json:
+ *           schema:
+ *             type: object
+ *             properties:
+ *               alloPoolId:
+ *                 type: string
+ *                 description: The ID of the pool to predict
+ *                 example: "609"  # Example of poolId
+ *               chainId:
+ *                 type: number
+ *                 description: The chain ID associated with the pool
+ *                 example: 42161  # Example of chainId (Arbitrum)
+ *              ballot:
+ *                 type: array
+ *                 description: Array of votes for metrics
+ *                 items:
+ *                   type: object
+ *                   properties:
+ *                     metricId:
+ *                       type: number
+ *                       description: ID of the metric
+ *                     voteShare:
+ *                       type: number
+ *                       description: Vote share percentage allocated to the metric
+ *                  example:
+ *                   - metricId: 1
+ *                     voteShare: 50
+ *                   - metricId: 2
+ *                     voteShare: 50
+ *             required:
+ *               - alloPoolId
+ *               - chainId
+ *               - ballot
+ *     responses:
+ *       200:
+ *         description: Distribution predicted successfully
+ *       400:
+ *         description: Invalid poolId or chainId format
+ *       500:
+ *         description: Internal server error
+ */
+router.post('/predict', predictDistribution);
 
 export default router;

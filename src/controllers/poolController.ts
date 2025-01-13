@@ -8,8 +8,14 @@ import {
   type RoundWithApplications as IndexerRoundWithApplications,
 } from '@/ext/indexer';
 
-import { BadRequestError, IsNullError, NotFoundError } from '@/errors';
+import {
+  BadRequestError,
+  IsNullError,
+  NotFoundError,
+  ServerError,
+} from '@/errors';
 import { EligibilityType } from '@/entity/EligibilityCriteria';
+import { calculate } from '@/utils/calculate';
 
 const logger = createLogger();
 
@@ -21,7 +27,7 @@ interface CreatePoolRequest {
   eligibilityData: object;
 }
 
-interface SyncPoolRequest {
+interface ChainIdAlloPoolIdRequest {
   chainId: number;
   alloPoolId: string;
 }
@@ -102,7 +108,7 @@ export const syncPool = async (req: Request, res: Response): Promise<void> => {
   validateRequest(req, res);
 
   // Extract chainId and alloPoolId from the request body
-  const { chainId, alloPoolId } = req.body as SyncPoolRequest;
+  const { chainId, alloPoolId } = req.body as ChainIdAlloPoolIdRequest;
 
   // Log the receipt of the update request
   logger.info(
@@ -152,4 +158,70 @@ const updateApplications = async (
     chainId,
     applicationData
   );
+};
+
+/**
+ * Calculates the distribution of a pool based on chainId and alloPoolId
+ *
+ * @param req - Express request object
+ * @param res - Express response object
+ */
+export const calculateDistribution = async (req, res): Promise<void> => {
+  const { chainId, alloPoolId } = req.body as ChainIdAlloPoolIdRequest;
+
+  const [errorFetching, distribution] = await catchError(
+    calculate(chainId, alloPoolId)
+  );
+
+  if (errorFetching !== null || distribution === undefined) {
+    logger.error(`Failed to calculate distribution: ${errorFetching?.message}`);
+    res.status(500).json({
+      message: 'Error calculating distribution',
+      error: errorFetching?.message,
+    });
+    throw new ServerError(`Error calculating distribution`);
+  }
+
+  const [errorUpdating, updatedDistribution] = await catchError(
+    poolService.updateDistribution(alloPoolId, chainId, distribution)
+  );
+
+  if (errorUpdating !== null || updatedDistribution === null) {
+    logger.error(`Failed to update distribution: ${errorUpdating?.message}`);
+    res.status(500).json({
+      message: 'Error updating distribution',
+      error: errorUpdating?.message,
+    });
+  }
+
+  res.status(200).json({ message: 'Distribution updated successfully' });
+};
+
+/**
+ * Finalizes the distribution of a pool based on chainId and alloPoolId
+ *
+ * @param req - Express request object
+ * @param res - Express response object
+ */
+export const finalizeDistribution = async (
+  req: Request,
+  res: Response
+): Promise<void> => {
+  const { chainId, alloPoolId } = req.body as ChainIdAlloPoolIdRequest;
+
+  const [errorFinalizing, finalizedDistribution] = await catchError(
+    poolService.finalizePoolDistribution(alloPoolId, chainId)
+  );
+
+  if (errorFinalizing !== null || finalizedDistribution === null) {
+    logger.error(
+      `Failed to finalize distribution: ${errorFinalizing?.message}`
+    );
+    res.status(500).json({
+      message: 'Error finalizing distribution',
+      error: errorFinalizing?.message,
+    });
+  }
+
+  res.status(200).json({ message: 'Distribution finalized successfully' });
 };
