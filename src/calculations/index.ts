@@ -121,6 +121,20 @@ const isMetricIncreasing = async (metrics: Metric[], metricName: string) => {
   return metric.orientation === 'increase';
 };
 
+// Function to normalize the score
+const normalizeScore = (
+  rawScore: number,
+  maxValue: number,
+  isIncreasing: boolean
+): number => {
+  let normalizedScore = rawScore / maxValue;
+  if (!isIncreasing) {
+    const POSITIVE_CONSTANT = 0.1;
+    normalizedScore = POSITIVE_CONSTANT + (1 - normalizedScore);
+  }
+  return normalizedScore;
+};
+
 export const calculateDistributions = async (
   alloPoolId: string,
   chainId: number
@@ -181,15 +195,9 @@ export const calculateDistributions = async (
       throw new NotFoundError(`Metric "${metricName}" not found in pool`);
     }
 
-    const { minValue, maxValue } = metricBounds[metricName];
+    const { maxValue } = metricBounds[metricName];
     const isIncreasing = await isMetricIncreasing(pool.metrics, metricName);
-
-    // Normalize score
-    let normalizedScore = rawScore / maxValue;
-    if (!isIncreasing) {
-      const POSITIVE_CONSTANT = 0.1;
-      normalizedScore = POSITIVE_CONSTANT + (1 - normalizedScore);
-    }
+    const normalizedScore = normalizeScore(rawScore, maxValue, isIncreasing);
 
     // Get vote share for the metric
     const totalVoteShare = votes.reduce((sum, vote) => {
