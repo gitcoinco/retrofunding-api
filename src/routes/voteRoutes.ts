@@ -74,12 +74,12 @@ router.post('/', submitVote);
  *               alloPoolId:
  *                 type: string
  *                 description: The ID of the pool to predict
- *                 example: "609"  # Example of poolId
+ *                 example: "609"
  *               chainId:
  *                 type: number
  *                 description: The chain ID associated with the pool
- *                 example: 42161  # Example of chainId (Arbitrum)
- *              ballot:
+ *                 example: 42161
+ *               ballot:
  *                 type: array
  *                 description: Array of votes for metrics
  *                 items:
@@ -91,7 +91,7 @@ router.post('/', submitVote);
  *                     voteShare:
  *                       type: number
  *                       description: Vote share percentage allocated to the metric
- *                  example:
+ *                 example:
  *                   - metricId: 1
  *                     voteShare: 50
  *                   - metricId: 2
