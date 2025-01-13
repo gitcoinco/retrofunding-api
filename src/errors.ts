@@ -33,3 +33,9 @@ export class IsNullError extends BaseError {
     super(message, 500);
   }
 }
+
+export class ServerError extends BaseError {
+  constructor(message: string) {
+    super(message, 500);
+  }
+}

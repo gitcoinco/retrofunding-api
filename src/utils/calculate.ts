@@ -1,10 +1,17 @@
-import { Metric } from '@/entity/Metric';
-import { Vote } from '@/entity/Vote';
+import { type Metric } from '@/entity/Metric';
+import { type Distribution } from '@/entity/Pool';
+import { type Vote } from '@/entity/Vote';
 import { NotFoundError } from '@/errors';
 import poolService from '@/service/PoolService';
 
+interface MetricFetcherResponse {
+  alloApplicationId: string;
+  metricName: string;
+  metricScore: number;
+}
+
 // Hardcoded votes for testing purposes
-const getHardcodedVotes = (): Partial<Vote>[] => {
+const getHardcodedVotes = (): Array<Partial<Vote>> => {
   return [
     {
       ballot: [
@@ -45,7 +52,10 @@ const getHardcodedVotes = (): Partial<Vote>[] => {
 };
 
 // TODO: Implement the gr8LucasMetricFetcher function to fetch metrics from the external endpoint
-const gr8LucasMetricFetcher = async (alloPoolId: string, chainId: number) => {
+const gr8LucasMetricFetcher = async (
+  alloPoolId: string,
+  chainId: number
+): Promise<MetricFetcherResponse[]> => {
   // Hardcoded object for now
   return [
     {
@@ -106,14 +116,17 @@ const gr8LucasMetricFetcher = async (alloPoolId: string, chainId: number) => {
   ];
 };
 
-const fetchVotes = async (chainId: number, alloPoolId: string) => {
+const fetchVotes = async (
+  chainId: number,
+  alloPoolId: string
+): Promise<Array<Partial<Vote>>> => {
   // const votes = await voteService.getVotesByChainIdAndAlloPoolId(chainId, alloPoolId);
   const votes = getHardcodedVotes();
   return votes;
 };
 
 // Function to determine if a metric is increasing or decreasing
-const isMetricIncreasing = async (metrics: Metric[], metricName: string) => {
+const isMetricIncreasing = (metrics: Metric[], metricName: string): boolean => {
   const metric = metrics.find(metric => metric.name === metricName);
   if (metric == null) {
     throw new NotFoundError(`Metric not found`);
@@ -135,10 +148,11 @@ const normalizeScore = (
   return normalizedScore;
 };
 
-export const calculateDistributions = async (
+export const calculate = async (
+  chainId: number,
   alloPoolId: string,
-  chainId: number
-) => {
+  unAccountedBallots?: Partial<Vote>
+): Promise<Distribution[]> => {
   const pool = await poolService.getPoolByChainIdAndAlloPoolId(
     chainId,
     alloPoolId
@@ -150,6 +164,9 @@ export const calculateDistributions = async (
   // Fetch votes using the hardcoded function
   const votes = await fetchVotes(chainId, alloPoolId);
 
+  // Add unAccountedBallots to the votes
+  if (unAccountedBallots != null) votes.push(unAccountedBallots);
+
   // Fetch metrics from the external endpoint
   const applicationToMetricsScores = await gr8LucasMetricFetcher(
     alloPoolId,
@@ -160,7 +177,7 @@ export const calculateDistributions = async (
   const metricBounds: Record<string, { minValue: number; maxValue: number }> =
     {};
   applicationToMetricsScores.forEach(({ metricName, metricScore }) => {
-    if (!metricBounds[metricName]) {
+    if (metricBounds[metricName] == null) {
       metricBounds[metricName] = {
         minValue: metricScore,
         maxValue: metricScore,
@@ -191,12 +208,12 @@ export const calculateDistributions = async (
     const metricDetails = pool.metrics.find(
       metric => metric.name === metricName
     );
-    if (!metricDetails) {
+    if (metricDetails == null) {
       throw new NotFoundError(`Metric "${metricName}" not found in pool`);
     }
 
     const { maxValue } = metricBounds[metricName];
-    const isIncreasing = await isMetricIncreasing(pool.metrics, metricName);
+    const isIncreasing = isMetricIncreasing(pool.metrics, metricName);
     const normalizedScore = normalizeScore(rawScore, maxValue, isIncreasing);
 
     // Get vote share for the metric
@@ -204,14 +221,14 @@ export const calculateDistributions = async (
       const ballotItem = vote.ballot?.find(
         item => item.metricName === metricName
       );
-      return ballotItem ? sum + ballotItem.voteShare : sum;
+      return ballotItem != null ? sum + ballotItem.voteShare : sum;
     }, 0);
 
     // Weighted score for this metric
     const weightedScore = (normalizedScore * totalVoteShare) / 100;
 
     // Add to application's total score
-    if (!appToWeightedScores[alloApplicationId]) {
+    if (appToWeightedScores[alloApplicationId] == null) {
       appToWeightedScores[alloApplicationId] = 0;
     }
     appToWeightedScores[alloApplicationId] += weightedScore;
