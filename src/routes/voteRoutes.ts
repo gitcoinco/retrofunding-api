@@ -61,7 +61,7 @@ router.post('/', submitVote);
 
 /**
  * @swagger
- * /predict:
+ * /vote/predict:
  *   post:
  *     summary: Predicts the distribution of a pool based on chainId and alloPoolId
  *     requestBody:

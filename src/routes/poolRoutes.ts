@@ -48,7 +48,7 @@ router.post('/', createPool);
 
 /**
  * @swagger
- * /sync:
+ * /pool/sync:
  *   post:
  *     summary: Syncs a pools applications with the given alloPoolId and chainId
  *     requestBody:
@@ -81,7 +81,7 @@ router.post('/sync', syncPool);
 
 /**
  * @swagger
- * /calculate:
+ * /pool/calculate:
  *   post:
  *     summary: Calculates the distribution of a pool based on chainId and alloPoolId
  *     requestBody:
@@ -114,7 +114,7 @@ router.post('/calculate', calculateDistribution);
 
 /**
  * @swagger
- * /finalize:
+ * /pool/finalize:
  *   post:
  *     summary: Finalizes the distribution of a pool based on chainId and alloPoolId
  *     requestBody:
