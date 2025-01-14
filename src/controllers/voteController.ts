@@ -1,12 +1,15 @@
 import { type Request, type Response } from 'express';
 import voteService from '@/service/VoteService';
 import poolService from '@/service/PoolService';
-import { catchError, validateRequest } from '@/utils';
-import { BadRequestError, ServerError } from '@/errors';
+import { catchError, recoverSignerAddress, validateRequest } from '@/utils';
+import { BadRequestError, ServerError, UnauthorizedError } from '@/errors';
 import { createLogger } from '@/logger';
 import { calculate } from '@/utils/calculate';
 import { type Pool } from '@/entity/Pool';
 import { type Vote } from '@/entity/Vote';
+import eligibilityCriteriaService from '@/service/EligibilityCriteriaService';
+import { type Hex } from 'viem';
+import { env } from 'process';
 const logger = createLogger();
 
 /**
@@ -22,11 +25,12 @@ export const submitVote = async (
   // Validate the incoming request
   validateRequest(req, res);
 
-  const { voter, alloPoolId, chainId, ballot } = req.body;
+  const { voter, alloPoolId, chainId, ballot, signature } = req.body;
   if (
     typeof voter !== 'string' ||
     typeof alloPoolId !== 'string' ||
     typeof chainId !== 'number' ||
+    typeof signature !== 'string' ||
     (Array.isArray(ballot) &&
       ballot.every(
         item =>
@@ -49,7 +53,14 @@ export const submitVote = async (
     throw new BadRequestError('Pool not found');
   }
 
-  if (!(await isVoterEligible(pool, voter))) {
+  if (
+    !(await checkVoterEligibility(
+      { alloPoolId, chainId },
+      signature as Hex,
+      pool,
+      voter
+    ))
+  ) {
     res.status(401).json({ message: 'Not Authorzied' });
     throw new BadRequestError('Not Authorzied');
   }
@@ -79,10 +90,26 @@ export const submitVote = async (
   res.status(201).json({ message: 'Vote submitted successfully' });
 };
 
-const isVoterEligible = async (pool: Pool, voter: string): Promise<boolean> => {
-  // TODO: Check if voter is eligible based on pool eligibility type
-  // TODO: also validate is sender is the voter
-  return await Promise.resolve(true);
+const checkVoterEligibility = async <T>(
+  obj: T,
+  signature: Hex,
+  pool: Pool,
+  voter: string
+): Promise<boolean> => {
+  if (env.NODE_ENV === 'development' && signature === '0xdeadbeef') {
+    logger.info('Skipping signature check in development mode');
+  } else {
+    const address = await recoverSignerAddress(obj, signature);
+    if (address.toLowerCase() !== voter.toLowerCase()) {
+      throw new UnauthorizedError('Unauthorized');
+    }
+  }
+
+  return await eligibilityCriteriaService.isVoterEligible(
+    pool.chainId,
+    pool.alloPoolId,
+    voter
+  );
 };
 
 /**

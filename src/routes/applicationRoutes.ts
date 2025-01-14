@@ -6,6 +6,8 @@ const router = Router();
  * @swagger
  * /application:
  *   post:
+ *     tags:
+ *       - application
  *     summary: Creates a new application linked to a pool
  *     requestBody:
  *       required: true

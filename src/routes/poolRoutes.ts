@@ -12,6 +12,8 @@ const router = Router();
  * @swagger
  * /pool:
  *   post:
+ *     tags:
+ *       - pool
  *     summary: Creates a pool
  *     requestBody:
  *       required: true
@@ -50,6 +52,8 @@ router.post('/', createPool);
  * @swagger
  * /pool/sync:
  *   post:
+ *     tags:
+ *       - pool
  *     summary: Syncs a pools applications with the given alloPoolId and chainId
  *     requestBody:
  *       required: true
@@ -83,6 +87,8 @@ router.post('/sync', syncPool);
  * @swagger
  * /pool/calculate:
  *   post:
+ *     tags:
+ *       - pool
  *     summary: Calculates the distribution of a pool based on chainId and alloPoolId
  *     requestBody:
  *       required: true
@@ -116,6 +122,8 @@ router.post('/calculate', calculateDistribution);
  * @swagger
  * /pool/finalize:
  *   post:
+ *     tags:
+ *       - pool
  *     summary: Finalizes the distribution of a pool based on chainId and alloPoolId
  *     requestBody:
  *       required: true
