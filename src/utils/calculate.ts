@@ -1,13 +1,13 @@
 import { type Metric } from '@/entity/Metric';
 import { type Distribution } from '@/entity/Pool';
 import { type Vote } from '@/entity/Vote';
-import { NotFoundError } from '@/errors';
+import { ActionNotAllowedError, NotFoundError } from '@/errors';
 import { indexerClient, Status } from '@/ext/indexer';
 import poolService from '@/service/PoolService';
 
 interface MetricFetcherResponse {
   alloApplicationId: string;
-  metricName: string;
+  metricIdentifier: string;
   metricScore: number;
 }
 
@@ -16,37 +16,37 @@ const getHardcodedVotes = (): Array<Partial<Vote>> => {
   return [
     {
       ballot: [
-        { metricName: 'twitterAccountAge', metricId: 1, voteShare: 50 },
-        { metricName: 'gasFees', metricId: 2, voteShare: 30 },
-        { metricName: 'userEngagement', metricId: 3, voteShare: 20 },
+        { metricIdentifier: 'twitterAccountAge', voteShare: 50 },
+        { metricIdentifier: 'gasFees', voteShare: 30 },
+        { metricIdentifier: 'userEngagement', voteShare: 20 },
       ],
     },
     {
       ballot: [
-        { metricName: 'twitterAccountAge', metricId: 1, voteShare: 40 },
-        { metricName: 'gasFees', metricId: 2, voteShare: 50 },
-        { metricName: 'userEngagement', metricId: 3, voteShare: 10 },
+        { metricIdentifier: 'twitterAccountAge', voteShare: 40 },
+        { metricIdentifier: 'gasFees', voteShare: 50 },
+        { metricIdentifier: 'userEngagement', voteShare: 10 },
       ],
     },
     {
       ballot: [
-        { metricName: 'twitterAccountAge', metricId: 1, voteShare: 60 },
-        { metricName: 'gasFees', metricId: 2, voteShare: 20 },
-        { metricName: 'userEngagement', metricId: 3, voteShare: 20 },
+        { metricIdentifier: 'twitterAccountAge', voteShare: 60 },
+        { metricIdentifier: 'gasFees', voteShare: 20 },
+        { metricIdentifier: 'userEngagement', voteShare: 20 },
       ],
     },
     {
       ballot: [
-        { metricName: 'twitterAccountAge', metricId: 1, voteShare: 30 },
-        { metricName: 'gasFees', metricId: 2, voteShare: 60 },
-        { metricName: 'userEngagement', metricId: 3, voteShare: 10 },
+        { metricIdentifier: 'twitterAccountAge', voteShare: 30 },
+        { metricIdentifier: 'gasFees', voteShare: 60 },
+        { metricIdentifier: 'userEngagement', voteShare: 10 },
       ],
     },
     {
       ballot: [
-        { metricName: 'twitterAccountAge', metricId: 1, voteShare: 20 },
-        { metricName: 'gasFees', metricId: 2, voteShare: 30 },
-        { metricName: 'userEngagement', metricId: 3, voteShare: 50 },
+        { metricIdentifier: 'twitterAccountAge', voteShare: 20 },
+        { metricIdentifier: 'gasFees', voteShare: 30 },
+        { metricIdentifier: 'userEngagement', voteShare: 50 },
       ],
     },
   ];
@@ -55,16 +55,21 @@ const getHardcodedVotes = (): Array<Partial<Vote>> => {
 const getApprovedAlloApplicationIds = async (
   alloPoolId: string,
   chainId: number
-): Promise<string[]> => {
+): Promise<[boolean, string[]]> => {
   const indexerPoolData = await indexerClient.getRoundWithApplications({
     chainId,
     roundId: alloPoolId,
   });
-  return (
+
+  // TODO: Implement this from indexer
+  const isFinalised = false;
+
+  return [
+    isFinalised,
     indexerPoolData?.applications
       .filter(application => application.status === Status.APPROVED)
-      .map(application => application.id) ?? []
-  );
+      .map(application => application.id) ?? [],
+  ];
 };
 
 // TODO: Implement the gr8LucasMetricFetcher function to fetch metrics from the external endpoint
@@ -76,57 +81,57 @@ const gr8LucasMetricFetcher = async (
   return [
     {
       alloApplicationId: 'app1',
-      metricName: 'twitterAccountAge',
+      metricIdentifier: 'twitterAccountAge',
       metricScore: 2,
     },
-    { alloApplicationId: 'app1', metricName: 'gasFees', metricScore: 30 },
+    { alloApplicationId: 'app1', metricIdentifier: 'gasFees', metricScore: 30 },
     {
       alloApplicationId: 'app1',
-      metricName: 'userEngagement',
+      metricIdentifier: 'userEngagement',
       metricScore: 0.5,
     },
     {
       alloApplicationId: 'app2',
-      metricName: 'twitterAccountAge',
+      metricIdentifier: 'twitterAccountAge',
       metricScore: 1,
     },
-    { alloApplicationId: 'app2', metricName: 'gasFees', metricScore: 20 },
+    { alloApplicationId: 'app2', metricIdentifier: 'gasFees', metricScore: 20 },
     {
       alloApplicationId: 'app2',
-      metricName: 'userEngagement',
+      metricIdentifier: 'userEngagement',
       metricScore: 0.7,
     },
     {
       alloApplicationId: 'app3',
-      metricName: 'twitterAccountAge',
+      metricIdentifier: 'twitterAccountAge',
       metricScore: 3,
     },
-    { alloApplicationId: 'app3', metricName: 'gasFees', metricScore: 40 },
+    { alloApplicationId: 'app3', metricIdentifier: 'gasFees', metricScore: 40 },
     {
       alloApplicationId: 'app3',
-      metricName: 'userEngagement',
+      metricIdentifier: 'userEngagement',
       metricScore: 0.4,
     },
     {
       alloApplicationId: 'app4',
-      metricName: 'twitterAccountAge',
+      metricIdentifier: 'twitterAccountAge',
       metricScore: 0.5,
     },
-    { alloApplicationId: 'app4', metricName: 'gasFees', metricScore: 10 },
+    { alloApplicationId: 'app4', metricIdentifier: 'gasFees', metricScore: 10 },
     {
       alloApplicationId: 'app4',
-      metricName: 'userEngagement',
+      metricIdentifier: 'userEngagement',
       metricScore: 0.6,
     },
     {
       alloApplicationId: 'app5',
-      metricName: 'twitterAccountAge',
+      metricIdentifier: 'twitterAccountAge',
       metricScore: 4,
     },
-    { alloApplicationId: 'app5', metricName: 'gasFees', metricScore: 50 },
+    { alloApplicationId: 'app5', metricIdentifier: 'gasFees', metricScore: 50 },
     {
       alloApplicationId: 'app5',
-      metricName: 'userEngagement',
+      metricIdentifier: 'userEngagement',
       metricScore: 0.2,
     },
   ];
@@ -142,8 +147,11 @@ const fetchVotes = async (
 };
 
 // Function to determine if a metric is increasing or decreasing
-const isMetricIncreasing = (metrics: Metric[], metricName: string): boolean => {
-  const metric = metrics.find(metric => metric.name === metricName);
+const isMetricIncreasing = (
+  metrics: Metric[],
+  metricIdentifier: string
+): boolean => {
+  const metric = metrics.find(metric => metric.name === metricIdentifier);
   if (metric == null) {
     throw new NotFoundError(`Metric not found`);
   }
@@ -184,10 +192,12 @@ export const calculate = async (
   if (unAccountedBallots != null) votes.push(unAccountedBallots);
 
   // Fetch approved allo application ids
-  const approvedAlloApplicationIds = await getApprovedAlloApplicationIds(
-    alloPoolId,
-    chainId
-  );
+  const [isFinalised, approvedAlloApplicationIds] =
+    await getApprovedAlloApplicationIds(alloPoolId, chainId);
+
+  if (isFinalised) {
+    throw new ActionNotAllowedError('Pool is finalised');
+  }
 
   // Fetch metrics from the external endpoint
   const fetchedApplicaionMetricScores = await gr8LucasMetricFetcher(
@@ -203,19 +213,19 @@ export const calculate = async (
   // Precompute min and max values for each metric
   const metricBounds: Record<string, { minValue: number; maxValue: number }> =
     {};
-  applicationToMetricsScores.forEach(({ metricName, metricScore }) => {
-    if (metricBounds[metricName] == null) {
-      metricBounds[metricName] = {
+  applicationToMetricsScores.forEach(({ metricIdentifier, metricScore }) => {
+    if (metricBounds[metricIdentifier] == null) {
+      metricBounds[metricIdentifier] = {
         minValue: metricScore,
         maxValue: metricScore,
       };
     } else {
-      metricBounds[metricName].minValue = Math.min(
-        metricBounds[metricName].minValue,
+      metricBounds[metricIdentifier].minValue = Math.min(
+        metricBounds[metricIdentifier].minValue,
         metricScore
       );
-      metricBounds[metricName].maxValue = Math.max(
-        metricBounds[metricName].maxValue,
+      metricBounds[metricIdentifier].maxValue = Math.max(
+        metricBounds[metricIdentifier].maxValue,
         metricScore
       );
     }
@@ -227,26 +237,26 @@ export const calculate = async (
   for (const metricScore of applicationToMetricsScores) {
     const {
       alloApplicationId,
-      metricName,
+      metricIdentifier,
       metricScore: rawScore,
     } = metricScore;
 
     // Get metric details from the pool
     const metricDetails = pool.metrics.find(
-      metric => metric.name === metricName
+      metric => metric.name === metricIdentifier
     );
     if (metricDetails == null) {
-      throw new NotFoundError(`Metric "${metricName}" not found in pool`);
+      throw new NotFoundError(`Metric "${metricIdentifier}" not found in pool`);
     }
 
-    const { maxValue } = metricBounds[metricName];
-    const isIncreasing = isMetricIncreasing(pool.metrics, metricName);
+    const { maxValue } = metricBounds[metricIdentifier];
+    const isIncreasing = isMetricIncreasing(pool.metrics, metricIdentifier);
     const normalizedScore = normalizeScore(rawScore, maxValue, isIncreasing);
 
     // Get vote share for the metric
     const totalVoteShare = votes.reduce((sum, vote) => {
       const ballotItem = vote.ballot?.find(
-        item => item.metricName === metricName
+        item => item.metricIdentifier === metricIdentifier
       );
       return ballotItem != null ? sum + ballotItem.voteShare : sum;
     }, 0);

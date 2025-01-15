@@ -84,19 +84,6 @@ class PoolService {
     pool.distribution = distribution;
     return await this.savePool(pool);
   }
-
-  async finalizePoolDistribution(
-    alloPoolId: string,
-    chainId: number
-  ): Promise<Pool> {
-    const pool = await this.getPoolByChainIdAndAlloPoolId(chainId, alloPoolId);
-    if (pool == null) {
-      throw new NotFoundError('Pool not found');
-    }
-
-    pool.finalized = true;
-    return await this.savePool(pool);
-  }
 }
 
 const poolService = new PoolService();

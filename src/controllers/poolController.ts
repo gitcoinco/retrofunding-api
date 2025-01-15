@@ -1,7 +1,7 @@
 import type { Request, Response } from 'express';
 import poolService from '@/service/PoolService';
 import applicationService from '@/service/ApplicationService';
-import { catchError, isPoolManager, validateRequest } from '@/utils';
+import { catchError, validateRequest } from '@/utils';
 import { createLogger } from '@/logger';
 import {
   indexerClient,
@@ -13,11 +13,9 @@ import {
   IsNullError,
   NotFoundError,
   ServerError,
-  UnauthorizedError,
 } from '@/errors';
 import { EligibilityType } from '@/entity/EligibilityCriteria';
 import { calculate } from '@/utils/calculate';
-import { type Hex } from 'viem';
 
 const logger = createLogger();
 
@@ -32,12 +30,6 @@ interface CreatePoolRequest {
 interface ChainIdAlloPoolIdRequest {
   chainId: number;
   alloPoolId: string;
-}
-
-interface FinalizePoolRequest {
-  chainId: number;
-  alloPoolId: string;
-  signature: Hex;
 }
 
 /**
@@ -203,45 +195,4 @@ export const calculateDistribution = async (req, res): Promise<void> => {
   }
 
   res.status(200).json({ message: 'Distribution updated successfully' });
-};
-
-/**
- * Finalizes the distribution of a pool based on chainId and alloPoolId
- *
- * @param req - Express request object
- * @param res - Express response object
- */
-export const finalizeDistribution = async (
-  req: Request,
-  res: Response
-): Promise<void> => {
-  const { chainId, alloPoolId, signature } = req.body as FinalizePoolRequest;
-
-  if (
-    !(await isPoolManager(
-      { chainId, alloPoolId },
-      signature,
-      chainId,
-      alloPoolId
-    ))
-  ) {
-    res.status(401).json({ message: 'Unauthorized' });
-    throw new UnauthorizedError('Unauthorized');
-  }
-
-  const [errorFinalizing, finalizedDistribution] = await catchError(
-    poolService.finalizePoolDistribution(alloPoolId, chainId)
-  );
-
-  if (errorFinalizing !== null || finalizedDistribution === null) {
-    logger.error(
-      `Failed to finalize distribution: ${errorFinalizing?.message}`
-    );
-    res.status(500).json({
-      message: 'Error finalizing distribution',
-      error: errorFinalizing?.message,
-    });
-  }
-
-  res.status(200).json({ message: 'Distribution finalized successfully' });
 };

@@ -34,8 +34,7 @@ export const submitVote = async (
     (Array.isArray(ballot) &&
       ballot.every(
         item =>
-          typeof item.metricName === 'string' &&
-          (item.metricId === undefined || typeof item.metricId === 'number') &&
+          typeof item.metricIdentifier === 'string' &&
           typeof item.voteShare === 'number'
       ))
   ) {

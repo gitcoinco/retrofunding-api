@@ -6,10 +6,15 @@ export enum MetricOrientation {
 }
 
 @Entity()
-@Unique(['name'])
+@Unique(['identifier'])
 export class Metric {
   @PrimaryGeneratedColumn()
   id: number;
+
+  @Column({
+    unique: true,
+  })
+  identifier: string;
 
   @Column()
   name: string;

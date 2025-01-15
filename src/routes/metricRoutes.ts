@@ -19,6 +19,10 @@ const router = Router();
  *             items:
  *               type: object
  *               properties:
+ *                 identifier:
+ *                   type: string
+ *                   description: Identifier of the metric
+ *                   example: "userEngagement"
  *                 name:
  *                   type: string
  *                   description: Name of the metric
@@ -37,6 +41,7 @@ const router = Router();
  *                   description: Whether the metric is active
  *                   example: true
  *             required:
+ *               - identifier
  *               - name
  *               - description
  *               - orientation

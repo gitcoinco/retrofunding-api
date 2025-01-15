@@ -44,9 +44,6 @@ export class Pool {
   @OneToMany(() => Vote, vote => vote.pool)
   votes: Vote[];
 
-  @Column({ default: false })
-  finalized: boolean;
-
   @Column('simple-json', { nullable: true })
   distribution: Distribution[];
 }

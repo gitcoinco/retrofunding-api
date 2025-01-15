@@ -2,7 +2,6 @@ import {
   createPool,
   syncPool,
   calculateDistribution,
-  finalizeDistribution,
 } from '@/controllers/poolController';
 import { Router } from 'express';
 
@@ -117,30 +116,5 @@ router.post('/sync', syncPool);
  *         description: Internal server error
  */
 router.post('/calculate', calculateDistribution);
-
-/**
- * @swagger
- * /pool/finalize:
- *   post:
- *     tags:
- *       - pool
- *     summary: Finalizes the distribution of a pool based on chainId and alloPoolId
- *     requestBody:
- *       required: true
- *       content:
- *         application/json:
- *           schema:
- *             type: object
- *             properties:
- *               alloPoolId:
- *                 type: string
- *                 description: The ID of the pool to finalize
- *                 example: "609"  # Example of poolId
- *               chainId:
- *                 type: number
- *                 description: The chain ID associated with the pool
- *                 example: 42161  # Example of chainId (Arbitrum)
- */
-router.post('/finalize', finalizeDistribution);
 
 export default router;
