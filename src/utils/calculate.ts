@@ -2,6 +2,7 @@ import { type Metric } from '@/entity/Metric';
 import { type Distribution } from '@/entity/Pool';
 import { type Vote } from '@/entity/Vote';
 import { NotFoundError } from '@/errors';
+import { indexerClient, Status } from '@/ext/indexer';
 import poolService from '@/service/PoolService';
 
 interface MetricFetcherResponse {
@@ -49,6 +50,21 @@ const getHardcodedVotes = (): Array<Partial<Vote>> => {
       ],
     },
   ];
+};
+
+const getApprovedAlloApplicationIds = async (
+  alloPoolId: string,
+  chainId: number
+): Promise<string[]> => {
+  const indexerPoolData = await indexerClient.getRoundWithApplications({
+    chainId,
+    roundId: alloPoolId,
+  });
+  return (
+    indexerPoolData?.applications
+      .filter(application => application.status === Status.APPROVED)
+      .map(application => application.id) ?? []
+  );
 };
 
 // TODO: Implement the gr8LucasMetricFetcher function to fetch metrics from the external endpoint
@@ -167,10 +183,21 @@ export const calculate = async (
   // Add unAccountedBallots to the votes
   if (unAccountedBallots != null) votes.push(unAccountedBallots);
 
-  // Fetch metrics from the external endpoint
-  const applicationToMetricsScores = await gr8LucasMetricFetcher(
+  // Fetch approved allo application ids
+  const approvedAlloApplicationIds = await getApprovedAlloApplicationIds(
     alloPoolId,
     chainId
+  );
+
+  // Fetch metrics from the external endpoint
+  const fetchedApplicaionMetricScores = await gr8LucasMetricFetcher(
+    alloPoolId,
+    chainId
+  );
+
+  // Filter the applicationToMetricsScores array to only include approved applications
+  const applicationToMetricsScores = fetchedApplicaionMetricScores.filter(
+    metric => approvedAlloApplicationIds.includes(metric.alloApplicationId)
   );
 
   // Precompute min and max values for each metric
