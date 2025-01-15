@@ -80,59 +80,48 @@ const gr8LucasMetricFetcher = async (
   // Hardcoded object for now
   return [
     {
-      alloApplicationId: 'app1',
+      alloApplicationId: '1',
       metricIdentifier: 'twitterAccountAge',
       metricScore: 2,
     },
-    { alloApplicationId: 'app1', metricIdentifier: 'gasFees', metricScore: 30 },
+    { alloApplicationId: '1', metricIdentifier: 'gasFees', metricScore: 30 },
     {
-      alloApplicationId: 'app1',
+      alloApplicationId: '1',
       metricIdentifier: 'userEngagement',
       metricScore: 0.5,
     },
     {
-      alloApplicationId: 'app2',
+      alloApplicationId: '2',
       metricIdentifier: 'twitterAccountAge',
       metricScore: 1,
     },
-    { alloApplicationId: 'app2', metricIdentifier: 'gasFees', metricScore: 20 },
+    { alloApplicationId: '2', metricIdentifier: 'gasFees', metricScore: 20 },
     {
-      alloApplicationId: 'app2',
+      alloApplicationId: '2',
       metricIdentifier: 'userEngagement',
       metricScore: 0.7,
     },
     {
-      alloApplicationId: 'app3',
+      alloApplicationId: '2',
       metricIdentifier: 'twitterAccountAge',
       metricScore: 3,
     },
-    { alloApplicationId: 'app3', metricIdentifier: 'gasFees', metricScore: 40 },
+    { alloApplicationId: '3', metricIdentifier: 'gasFees', metricScore: 40 },
     {
-      alloApplicationId: 'app3',
+      alloApplicationId: '3',
       metricIdentifier: 'userEngagement',
       metricScore: 0.4,
     },
     {
-      alloApplicationId: 'app4',
+      alloApplicationId: '4',
       metricIdentifier: 'twitterAccountAge',
       metricScore: 0.5,
     },
-    { alloApplicationId: 'app4', metricIdentifier: 'gasFees', metricScore: 10 },
+    { alloApplicationId: '4', metricIdentifier: 'gasFees', metricScore: 10 },
     {
-      alloApplicationId: 'app4',
+      alloApplicationId: '4',
       metricIdentifier: 'userEngagement',
       metricScore: 0.6,
-    },
-    {
-      alloApplicationId: 'app5',
-      metricIdentifier: 'twitterAccountAge',
-      metricScore: 4,
-    },
-    { alloApplicationId: 'app5', metricIdentifier: 'gasFees', metricScore: 50 },
-    {
-      alloApplicationId: 'app5',
-      metricIdentifier: 'userEngagement',
-      metricScore: 0.2,
     },
   ];
 };
