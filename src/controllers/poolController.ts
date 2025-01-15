@@ -1,7 +1,7 @@
 import type { Request, Response } from 'express';
 import poolService from '@/service/PoolService';
 import applicationService from '@/service/ApplicationService';
-import { catchError, isPoolManager, validateRequest } from '@/utils';
+import { catchError, validateRequest } from '@/utils';
 import { createLogger } from '@/logger';
 import {
   indexerClient,
@@ -13,31 +13,23 @@ import {
   IsNullError,
   NotFoundError,
   ServerError,
-  UnauthorizedError,
 } from '@/errors';
 import { EligibilityType } from '@/entity/EligibilityCriteria';
 import { calculate } from '@/utils/calculate';
-import { type Hex } from 'viem';
+import eligibilityCriteriaService from '@/service/EligibilityCriteriaService';
+import { type PoolIdChainId } from './types';
 
 const logger = createLogger();
 
-interface CreatePoolRequest {
-  chainId: number;
-  alloPoolId: string;
-  metricsIds: number[];
+interface CreatePoolRequest extends PoolIdChainId {
+  metricIdentifiers: string[];
   eligibilityType: EligibilityType;
   eligibilityData: object;
 }
 
-interface ChainIdAlloPoolIdRequest {
-  chainId: number;
-  alloPoolId: string;
-}
-
-interface FinalizePoolRequest {
-  chainId: number;
-  alloPoolId: string;
-  signature: Hex;
+interface EligibilityCriteriaRequest extends PoolIdChainId {
+  eligibilityType: EligibilityType;
+  data: object;
 }
 
 /**
@@ -53,9 +45,13 @@ export const createPool = async (
   // Validate the incoming request
   validateRequest(req, res);
 
-  // Extract chainId and alloPoolId from the request body
-  const { chainId, alloPoolId, eligibilityType, eligibilityData, metricsIds } =
-    req.body as CreatePoolRequest;
+  const {
+    chainId,
+    alloPoolId,
+    eligibilityType,
+    eligibilityData,
+    metricIdentifiers,
+  } = req.body as CreatePoolRequest;
 
   logger.info(
     `Received create pool request for chainId: ${chainId}, alloPoolId: ${alloPoolId}`
@@ -75,25 +71,24 @@ export const createPool = async (
     })
   );
 
-  if (errorFetching !== null || indexerPoolData === null) {
+  if (errorFetching !== undefined || indexerPoolData === null) {
     res.status(404).json({ message: 'Pool not found on indexer' });
     throw new NotFoundError('Pool not found on indexer');
   }
 
-  // Get or create the pool
   // Create the pool with the fetched data
-  const [error, pool] = await catchError(
+  const [error] = await catchError(
     poolService.createNewPool(
       chainId,
       alloPoolId,
       eligibilityType,
       eligibilityData,
-      metricsIds
+      metricIdentifiers
     )
   );
 
   // Handle errors during the create operation
-  if (error != null || pool == null) {
+  if (error !== undefined) {
     logger.error(`Failed to create pool: ${error?.message}`);
     res
       .status(500)
@@ -101,7 +96,7 @@ export const createPool = async (
     throw new IsNullError(`Error creating pool`);
   }
 
-  logger.info('successfully created pool', pool);
+  logger.info('successfully created pool');
   res.status(200).json({ message: 'pool created successfully' });
 };
 
@@ -116,7 +111,7 @@ export const syncPool = async (req: Request, res: Response): Promise<void> => {
   validateRequest(req, res);
 
   // Extract chainId and alloPoolId from the request body
-  const { chainId, alloPoolId } = req.body as ChainIdAlloPoolIdRequest;
+  const { chainId, alloPoolId } = req.body as PoolIdChainId;
 
   // Log the receipt of the update request
   logger.info(
@@ -132,7 +127,7 @@ export const syncPool = async (req: Request, res: Response): Promise<void> => {
   );
 
   // Handle errors or missing data from the indexer
-  if (errorFetching != null || indexerPoolData == null) {
+  if (errorFetching !== undefined || indexerPoolData == null) {
     logger.warn(
       `No pool found for chainId: ${chainId}, alloPoolId: ${alloPoolId}`
     );
@@ -175,7 +170,7 @@ const updateApplications = async (
  * @param res - Express response object
  */
 export const calculateDistribution = async (req, res): Promise<void> => {
-  const { chainId, alloPoolId } = req.body as ChainIdAlloPoolIdRequest;
+  const { chainId, alloPoolId } = req.body as PoolIdChainId;
 
   const [errorFetching, distribution] = await catchError(
     calculate(chainId, alloPoolId)
@@ -205,43 +200,33 @@ export const calculateDistribution = async (req, res): Promise<void> => {
   res.status(200).json({ message: 'Distribution updated successfully' });
 };
 
-/**
- * Finalizes the distribution of a pool based on chainId and alloPoolId
- *
- * @param req - Express request object
- * @param res - Express response object
- */
-export const finalizeDistribution = async (
-  req: Request,
-  res: Response
-): Promise<void> => {
-  const { chainId, alloPoolId, signature } = req.body as FinalizePoolRequest;
+export const updateEligibilityCriteria = async (req, res): Promise<void> => {
+  const { eligibilityType, alloPoolId, chainId, data } =
+    req.body as EligibilityCriteriaRequest;
 
-  if (
-    !(await isPoolManager(
-      { chainId, alloPoolId },
-      signature,
-      chainId,
-      alloPoolId
-    ))
-  ) {
-    res.status(401).json({ message: 'Unauthorized' });
-    throw new UnauthorizedError('Unauthorized');
-  }
-
-  const [errorFinalizing, finalizedDistribution] = await catchError(
-    poolService.finalizePoolDistribution(alloPoolId, chainId)
+  // Log the receipt of the update request
+  logger.info(
+    `Received update eligibility criteria request for chainId: ${chainId}, alloPoolId: ${alloPoolId}`
   );
 
-  if (errorFinalizing !== null || finalizedDistribution === null) {
-    logger.error(
-      `Failed to finalize distribution: ${errorFinalizing?.message}`
-    );
+  const [error] = await catchError(
+    eligibilityCriteriaService.saveEligibilityCriteria({
+      chainId,
+      alloPoolId,
+      eligibilityType,
+      data,
+    })
+  );
+
+  if (error !== undefined) {
+    logger.error(`Failed to update eligibility criteria: ${error?.message}`);
     res.status(500).json({
-      message: 'Error finalizing distribution',
-      error: errorFinalizing?.message,
+      message: 'Error updating eligibility criteria',
+      error: error?.message,
     });
   }
 
-  res.status(200).json({ message: 'Distribution finalized successfully' });
+  res.status(200).json({
+    message: 'Eligibility criteria updated successfully',
+  });
 };

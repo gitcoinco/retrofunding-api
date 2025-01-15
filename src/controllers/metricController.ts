@@ -11,11 +11,12 @@ const logger = createLogger();
 const isMetric = (obj: any): obj is Metric => {
   return (
     typeof obj === 'object' &&
+    typeof obj.identifier === 'string' &&
     typeof obj.name === 'string' &&
     typeof obj.description === 'string' &&
     (obj.orientation === MetricOrientation.Increase ||
       obj.orientation === MetricOrientation.Decrease) &&
-    typeof obj.active === 'boolean'
+    typeof obj.enabled === 'boolean'
   );
 };
 
@@ -32,7 +33,7 @@ export const addMetrics = async (
 
   // TODO: ensure caller is admin
 
-  const data = req.body;
+  const data = req.body as Metric[];
 
   // Combined validation to check if req.body is Metric[]
   if (!isValidMetricsData(data)) {
@@ -42,11 +43,9 @@ export const addMetrics = async (
 
   const metricsData: Metric[] = data;
 
-  const [error, metrics] = await catchError(
-    metricService.saveMetrics(metricsData)
-  );
+  const [error] = await catchError(metricService.saveMetrics(metricsData));
 
-  if (error != null || metrics == null) {
+  if (error !== undefined) {
     logger.error(`Failed to save metrics: ${error?.message}`);
     res
       .status(500)
@@ -54,6 +53,31 @@ export const addMetrics = async (
     throw new IsNullError('Error saving metrics');
   }
 
-  logger.info('successfully saved metrics', metrics);
+  logger.info('successfully saved metrics');
   res.status(201).json({ message: 'Metrics saved successfully.' });
+};
+
+export const updateMetric = async (
+  req: Request,
+  res: Response
+): Promise<void> => {
+  validateRequest(req, res);
+
+  const identifier = req.params.identifier;
+  const metric = req.body as Partial<Metric>;
+
+  const [error, metrics] = await catchError(
+    metricService.updateMetric(identifier, metric)
+  );
+
+  if (error !== undefined) {
+    logger.error(`Failed to update metric: ${error?.message}`);
+    res
+      .status(500)
+      .json({ message: 'Error updating metric', error: error?.message });
+    throw new IsNullError('Error updating metric');
+  }
+
+  logger.info('successfully updated metric', metrics);
+  res.status(200).json({ message: 'Metric updated successfully.' });
 };

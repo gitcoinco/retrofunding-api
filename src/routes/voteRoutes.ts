@@ -21,6 +21,10 @@ const router = Router();
  *                 type: string
  *                 description: Address of the voter
  *                 example: "0x1234567890abcdef1234567890abcdef12345678"
+ *               signature:
+ *                 type: string
+ *                 description: Signature of the voter
+ *                 example: "0xdeadbeef"
  *               alloPoolId:
  *                 type: string
  *                 description: The ID of the pool (from Allo) to which the vote is submitted
@@ -35,19 +39,20 @@ const router = Router();
  *                 items:
  *                   type: object
  *                   properties:
- *                     metricId:
- *                       type: number
- *                       description: ID of the metric
+ *                     metricIdentifier:
+ *                       type: string
+ *                       description: Metric identifier
  *                     voteShare:
  *                       type: number
  *                       description: Vote share percentage allocated to the metric
  *                 example:
- *                   - metricId: 1
- *                     voteShare: 50
- *                   - metricId: 2
+ *                   - metricId: "twitterAge"
+ *                     voteShare: 150
+ *                   - metricId: "githubFollowers"
  *                     voteShare: 50
  *             required:
  *               - voter
+ *               - signature
  *               - alloPoolId
  *               - chainId
  *               - ballot

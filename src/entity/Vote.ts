@@ -8,8 +8,7 @@ import {
 import { Pool } from './Pool';
 
 export interface Ballot {
-  metricName: string;
-  metricId?: number;
+  metricIdentifier: string;
   voteShare: number; // Percentage of the total vote allocated to this metric
 }
 

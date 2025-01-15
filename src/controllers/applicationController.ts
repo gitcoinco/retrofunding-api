@@ -5,12 +5,11 @@ import { catchError, validateRequest } from '@/utils';
 import { IsNullError, NotFoundError } from '@/errors';
 import { createLogger } from '@/logger';
 import { indexerClient } from '@/ext/indexer';
+import { type PoolIdChainId } from './types';
 
 const logger = createLogger();
 
-interface CreateApplicationRequest {
-  chainId: number;
-  alloPoolId: string;
+interface CreateApplicationRequest extends PoolIdChainId {
   alloApplicationId: string;
 }
 
@@ -70,7 +69,7 @@ export const createApplication = async (
   );
 
   // Handle errors
-  if (error !== null || application === null) {
+  if (error !== undefined || application === null) {
     logger.error(`Failed to create application: ${error?.message}`);
     res
       .status(500)

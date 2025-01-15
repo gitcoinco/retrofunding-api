@@ -5,10 +5,8 @@ import {
   OneToMany,
   Unique,
   OneToOne,
-  ManyToMany,
 } from 'typeorm';
 import { Application } from '@/entity/Application';
-import { Metric } from './Metric';
 import { EligibilityCriteria } from './EligibilityCriteria';
 import { Vote } from './Vote';
 
@@ -38,14 +36,11 @@ export class Pool {
   @OneToMany(() => Application, application => application.pool)
   applications: Application[];
 
-  @ManyToMany(() => Metric, { eager: true }) // Unidirectional relation
-  metrics: Metric[];
+  @Column('simple-array', { nullable: true })
+  metricIdentifiers: string[];
 
   @OneToMany(() => Vote, vote => vote.pool)
   votes: Vote[];
-
-  @Column({ default: false })
-  finalized: boolean;
 
   @Column('simple-json', { nullable: true })
   distribution: Distribution[];

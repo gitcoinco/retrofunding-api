@@ -1,4 +1,4 @@
-import { Column, Entity, PrimaryGeneratedColumn, Unique } from 'typeorm';
+import { Column, Entity, PrimaryGeneratedColumn } from 'typeorm';
 
 export enum MetricOrientation {
   Increase = 'increase',
@@ -6,10 +6,14 @@ export enum MetricOrientation {
 }
 
 @Entity()
-@Unique(['name'])
 export class Metric {
   @PrimaryGeneratedColumn()
   id: number;
+
+  @Column({
+    unique: true,
+  })
+  identifier: string;
 
   @Column()
   name: string;

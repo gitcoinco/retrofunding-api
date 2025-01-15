@@ -6,11 +6,18 @@ import { BadRequestError, ServerError, UnauthorizedError } from '@/errors';
 import { createLogger } from '@/logger';
 import { calculate } from '@/utils/calculate';
 import { type Pool } from '@/entity/Pool';
-import { type Vote } from '@/entity/Vote';
+import { type Ballot, type Vote } from '@/entity/Vote';
 import eligibilityCriteriaService from '@/service/EligibilityCriteriaService';
 import { type Hex } from 'viem';
 import { env } from 'process';
+import { type PoolIdChainId } from './types';
 const logger = createLogger();
+
+interface SubmitVoteRequest extends PoolIdChainId {
+  voter: string;
+  ballot: Ballot[];
+  signature: Hex;
+}
 
 /**
  * Submits a vote for a given pool
@@ -25,7 +32,8 @@ export const submitVote = async (
   // Validate the incoming request
   validateRequest(req, res);
 
-  const { voter, alloPoolId, chainId, ballot, signature } = req.body;
+  const { voter, alloPoolId, chainId, ballot, signature } =
+    req.body as SubmitVoteRequest;
   if (
     typeof voter !== 'string' ||
     typeof alloPoolId !== 'string' ||
@@ -34,8 +42,7 @@ export const submitVote = async (
     (Array.isArray(ballot) &&
       ballot.every(
         item =>
-          typeof item.metricName === 'string' &&
-          (item.metricId === undefined || typeof item.metricId === 'number') &&
+          typeof item.metricIdentifier === 'string' &&
           typeof item.voteShare === 'number'
       ))
   ) {
@@ -56,7 +63,7 @@ export const submitVote = async (
   if (
     !(await checkVoterEligibility(
       { alloPoolId, chainId },
-      signature as Hex,
+      signature,
       pool,
       voter
     ))
@@ -65,7 +72,7 @@ export const submitVote = async (
     throw new BadRequestError('Not Authorzied');
   }
 
-  const [error, result] = await catchError(
+  const [error] = await catchError(
     voteService.saveVote({
       voter,
       alloPoolId,
@@ -76,7 +83,7 @@ export const submitVote = async (
     })
   );
 
-  if (error !== null || result === null) {
+  if (error !== null) {
     res
       .status(500)
       .json({ message: 'Error submitting vote', error: error?.message });
@@ -86,7 +93,7 @@ export const submitVote = async (
   // Trigger the distribution without waiting
   void calculate(chainId, alloPoolId);
 
-  logger.info('Vote submitted successfully', result);
+  logger.info('Vote submitted successfully');
   res.status(201).json({ message: 'Vote submitted successfully' });
 };
 

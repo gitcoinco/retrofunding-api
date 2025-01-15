@@ -13,7 +13,7 @@ export enum EligibilityType {
 }
 
 @Entity()
-@Unique(['poolId'])
+@Unique(['chainId', 'alloPoolId'])
 export class EligibilityCriteria {
   @PrimaryGeneratedColumn()
   id: number;
@@ -37,7 +37,4 @@ export class EligibilityCriteria {
 
   @Column('json')
   data: any;
-
-  @Column() // Explicitly define the foreign key column for pool
-  poolId: number;
 }

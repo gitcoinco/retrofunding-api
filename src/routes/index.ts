@@ -7,7 +7,7 @@ import voteRoutes from '@/routes/voteRoutes';
 const router = Router();
 
 router.use('/application', applicationRoutes);
-router.use('/pools', poolRoutes);
+router.use('/pool', poolRoutes);
 router.use('/metrics', metricRoutes);
 router.use('/vote', voteRoutes);
 
