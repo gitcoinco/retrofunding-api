@@ -19,10 +19,9 @@ class PoolService {
     chainId: number,
     alloPoolId: string
   ): Promise<Pool | null> {
-    const pool = await poolRepository.findOne({
+    return await poolRepository.findOne({
       where: { chainId, alloPoolId },
     });
-    return pool;
   }
 
   async createNewPool(
@@ -30,18 +29,14 @@ class PoolService {
     alloPoolId: string,
     eligibilityType: EligibilityType,
     eligibilityData: object,
-    metricsIds: number[]
-  ): Promise<Pool> {
-    let eligibilityCriteria =
-      await eligibilityCriteriaService.getEligibilityCriteriaByChainIdAndAlloPoolId(
-        chainId,
-        alloPoolId
-      );
-    if (eligibilityCriteria != null) {
-      throw new AlreadyExistsError(`Eligibility criteria already exists`);
+    metricIdentifiers: string[]
+  ): Promise<void> {
+    const _pool = await this.getPoolByChainIdAndAlloPoolId(chainId, alloPoolId);
+    if (_pool !== null) {
+      throw new AlreadyExistsError(`Pool already exists`);
     }
 
-    eligibilityCriteria =
+    const eligibilityCriteria =
       await eligibilityCriteriaService.saveEligibilityCriteria({
         chainId,
         alloPoolId,
@@ -49,18 +44,18 @@ class PoolService {
         data: eligibilityData,
       });
 
-    const _pool = await this.getPoolByChainIdAndAlloPoolId(chainId, alloPoolId);
-    if (_pool != null) {
-      throw new AlreadyExistsError(`Pool already exists`);
+    const metrics =
+      await metricService.getEnabledMetricsByIdentifiers(metricIdentifiers);
+
+    if (metrics.length !== metricIdentifiers.length) {
+      throw new NotFoundError('Metrics not found/enabled');
     }
 
-    const metrics = await metricService.getMetricsByIds(metricsIds);
-
-    return await this.savePool({
+    await this.savePool({
       chainId,
       alloPoolId,
       eligibilityCriteria,
-      metrics,
+      metricIdentifiers,
     });
   }
 

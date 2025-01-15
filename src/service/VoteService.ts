@@ -2,7 +2,7 @@ import { type Vote } from '@/entity/Vote';
 import { voteRepository } from '@/repository';
 
 class VoteService {
-  async saveVote(voteData: Partial<Vote>): Promise<Vote> {
+  async saveVote(voteData: Partial<Vote>): Promise<void> {
     // Check if vote already exists for the voter and pool
     const existingVote = await voteRepository.findOne({
       where: {
@@ -14,12 +14,12 @@ class VoteService {
     if (existingVote !== null) {
       // Update existing vote
       voteRepository.merge(existingVote, voteData);
-      return await voteRepository.save(existingVote);
+      await voteRepository.save(existingVote);
     }
 
     // Create new vote
     const newVote = voteRepository.create(voteData);
-    return await voteRepository.save(newVote);
+    await voteRepository.save(newVote);
   }
 
   async getVotesByChainIdAndAlloPoolId(

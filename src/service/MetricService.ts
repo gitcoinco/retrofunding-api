@@ -3,9 +3,16 @@ import { metricRepository } from '@/repository';
 import { In } from 'typeorm';
 
 class MetricService {
-  async saveMetrics(metrics: Array<Partial<Metric>>): Promise<Metric[]> {
+  async saveMetrics(metrics: Metric[]): Promise<void> {
     const newMetrics = metricRepository.create(metrics);
-    return await metricRepository.save(newMetrics);
+    await metricRepository.save(newMetrics);
+  }
+
+  async updateMetric(
+    identifier: string,
+    metric: Partial<Metric>
+  ): Promise<void> {
+    await metricRepository.update({ identifier }, metric);
   }
 
   async getMetricById(id: number): Promise<Metric | null> {
@@ -25,6 +32,20 @@ class MetricService {
 
   async getMetricsByNames(names: string[]): Promise<Metric[]> {
     return await metricRepository.find({ where: { name: In(names) } });
+  }
+
+  async getMetricsByIdentifiers(identifiers: string[]): Promise<Metric[]> {
+    return await metricRepository.find({
+      where: { identifier: In(identifiers) },
+    });
+  }
+
+  async getEnabledMetricsByIdentifiers(
+    identifiers: string[]
+  ): Promise<Metric[]> {
+    return await metricRepository.find({
+      where: { identifier: In(identifiers), enabled: true },
+    });
   }
 }
 

@@ -1,8 +1,8 @@
-import { type Metric } from '@/entity/Metric';
 import { type Distribution } from '@/entity/Pool';
 import { type Vote } from '@/entity/Vote';
 import { ActionNotAllowedError, NotFoundError } from '@/errors';
 import { indexerClient, Status } from '@/ext/indexer';
+import metricService from '@/service/MetricService';
 import poolService from '@/service/PoolService';
 
 interface MetricFetcherResponse {
@@ -136,15 +136,14 @@ const fetchVotes = async (
 };
 
 // Function to determine if a metric is increasing or decreasing
-const isMetricIncreasing = (
-  metrics: Metric[],
-  metricIdentifier: string
-): boolean => {
-  const metric = metrics.find(metric => metric.name === metricIdentifier);
+const isMetricIncreasing = (metricIdentifier: string): boolean => {
+  const metric = metricService.getEnabledMetricsByIdentifiers([
+    metricIdentifier,
+  ]);
   if (metric == null) {
     throw new NotFoundError(`Metric not found`);
   }
-  return metric.orientation === 'increase';
+  return metric[0].orientation === 'increase';
 };
 
 // Function to normalize the score
@@ -178,7 +177,7 @@ export const calculate = async (
   const votes = await fetchVotes(chainId, alloPoolId);
 
   // Add unAccountedBallots to the votes
-  if (unAccountedBallots != null) votes.push(unAccountedBallots);
+  if (unAccountedBallots !== undefined) votes.push(unAccountedBallots);
 
   // Fetch approved allo application ids
   const [isFinalised, approvedAlloApplicationIds] =
@@ -231,15 +230,12 @@ export const calculate = async (
     } = metricScore;
 
     // Get metric details from the pool
-    const metricDetails = pool.metrics.find(
-      metric => metric.name === metricIdentifier
-    );
-    if (metricDetails == null) {
+    if (!pool.metricIdentifiers.includes(metricIdentifier)) {
       throw new NotFoundError(`Metric "${metricIdentifier}" not found in pool`);
     }
 
     const { maxValue } = metricBounds[metricIdentifier];
-    const isIncreasing = isMetricIncreasing(pool.metrics, metricIdentifier);
+    const isIncreasing = isMetricIncreasing(metricIdentifier);
     const normalizedScore = normalizeScore(rawScore, maxValue, isIncreasing);
 
     // Get vote share for the metric

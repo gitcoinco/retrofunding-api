@@ -2,6 +2,7 @@ import {
   createPool,
   syncPool,
   calculateDistribution,
+  updateEligibilityCriteria,
 } from '@/controllers/poolController';
 import { Router } from 'express';
 
@@ -24,14 +25,29 @@ const router = Router();
  *               alloPoolId:
  *                 type: string
  *                 description: The ID of the pool to create
- *                 example: "609"  # Example of poolId
+ *                 example: "615"  # Example of poolId
  *               chainId:
  *                 type: number
  *                 description: The chain ID associated with the pool
- *                 example: 42161  # Example of chainId (Arbitrum)
+ *                 example: 11155111 # Example of chainId (Sepolia)
+ *               eligibilityType:
+ *                 type: string
+ *                 description: The type of eligibility to check
+ *                 example: "linear"  # Example of eligibilityType
+ *               eligibilityData:
+ *                 type: object
+ *                 description: The data for the eligibility criteria
+ *                 example: { "voters": ["0xB8cEF765721A6da910f14Be93e7684e9a3714123", "0x5645bF145C3f1E974D0D7FB91bf3c68592ab5012"] }  # Example of data
+ *               metricIdentifiers:
+ *                 type: array
+ *                 description: The identifiers of the metrics to associate with the pool
+ *                 example: ["userEngagement"]  # Example of metricsIds
  *             required:
  *               - alloPoolId
  *               - chainId
+ *               - eligibilityType
+ *               - eligibilityData
+ *               - metricIdentifiers
  *     responses:
  *       201:
  *         description: Pool created successfully
@@ -42,15 +58,18 @@ const router = Router();
  *     examples:
  *       application/json:
  *         - value:
- *             alloPoolId: "609"
- *             chainId: "42161"
+ *             alloPoolId: "615" # Example of poolId
+ *             chainId: "11155111" # Example of chainId (Sepolia)
+ *             eligibilityType: "linear"
+ *             eligibilityData: { "voters": ["0xB8cEF765721A6da910f14Be93e7684e9a3714123", "0x5645bF145C3f1E974D0D7FB91bf3c68592ab5012"] }
+ *             metricIdentifiers: ["userEngagement"]
  */
 router.post('/', createPool);
 
 /**
  * @swagger
  * /pool/sync:
- *   post:
+ *   put:
  *     tags:
  *       - pool
  *     summary: Syncs a pools applications with the given alloPoolId and chainId
@@ -64,11 +83,11 @@ router.post('/', createPool);
  *               alloPoolId:
  *                 type: string
  *                 description: The ID of the pool to sync
- *                 example: "609"  # Example of poolId
+ *                 example: "615"  # Example of poolId
  *               chainId:
  *                 type: number
  *                 description: The chain ID associated with the pool
- *                 example: 42161  # Example of chainId (Arbitrum)
+ *                 example: 11155111 # Example of chainId (Sepolia)
  *             required:
  *               - alloPoolId
  *               - chainId
@@ -80,7 +99,7 @@ router.post('/', createPool);
  *       500:
  *         description: Internal server error
  */
-router.post('/sync', syncPool);
+router.put('/sync', syncPool);
 
 /**
  * @swagger
@@ -99,11 +118,11 @@ router.post('/sync', syncPool);
  *               alloPoolId:
  *                 type: string
  *                 description: The ID of the pool to calculate
- *                 example: "609"  # Example of poolId
+ *                 example: "615"  # Example of poolId
  *               chainId:
  *                 type: number
  *                 description: The chain ID associated with the pool
- *                 example: 42161  # Example of chainId (Arbitrum)
+ *                 example: 11155111 # Example of chainId (Sepolia)
  *             required:
  *               - alloPoolId
  *               - chainId
@@ -116,5 +135,50 @@ router.post('/sync', syncPool);
  *         description: Internal server error
  */
 router.post('/calculate', calculateDistribution);
+
+/**
+ * @swagger
+ * /pool/eligibility:
+ *   put:
+ *     tags:
+ *       - pool
+ *     summary: Update the eligibility of a pool
+ *     requestBody:
+ *       required: true
+ *       content:
+ *         application/json:
+ *           schema:
+ *             type: object
+ *             properties:
+ *               alloPoolId:
+ *                 type: string
+ *                 description: The ID of the pool
+ *                 example: "615"  # Example of poolId
+ *               chainId:
+ *                 type: number
+ *                 description: The chain ID associated with the pool
+ *                 example: 11155111 # Example of chainId (Sepolia)
+ *               eligibilityType:
+ *                 type: string
+ *                 description: The type of eligibility to check
+ *                 example: "linear"  # Example of eligibilityType
+ *               data:
+ *                 type: object
+ *                 description: The data for the eligibility criteria
+ *                 example: { "voters": ["0xB8cEF765721A6da910f14Be93e7684e9a3714123", "0x5645bF145C3f1E974D0D7FB91bf3c68592ab5012"] }  # Example of data
+ *             required:
+ *               - alloPoolId
+ *               - chainId
+ *               - eligibilityType
+ *               - data
+ *     responses:
+ *       200:
+ *         description: Eligibility checked successfully
+ *       400:
+ *         description: Invalid eligibilityType, poolId, or chainId format
+ *       500:
+ *         description: Internal server error
+ */
+router.put('/eligibility', updateEligibilityCriteria);
 
 export default router;

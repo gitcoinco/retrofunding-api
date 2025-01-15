@@ -1,5 +1,5 @@
 import { Router } from 'express';
-import { addMetrics } from '@/controllers/metricController';
+import { addMetrics, updateMetric } from '@/controllers/metricController';
 
 const router = Router();
 
@@ -36,16 +36,16 @@ const router = Router();
  *                   enum: [increase, decrease]
  *                   description: Priority of the metric
  *                   example: "increase"
- *                 active:
+ *                 enabled:
  *                   type: boolean
- *                   description: Whether the metric is active
+ *                   description: Whether the metric is enabled
  *                   example: true
  *             required:
  *               - identifier
  *               - name
  *               - description
  *               - orientation
- *               - active
+ *               - enabled
  *     responses:
  *       201:
  *         description: Metrics added successfully
@@ -55,5 +55,41 @@ const router = Router();
  *         description: Internal server error
  */
 router.post('/', addMetrics);
+
+/**
+ * @swagger
+ * /metrics/{identifier}:
+ *   put:
+ *     tags:
+ *       - metrics
+ *     summary: Updates a metric
+ *     parameters:
+ *       - in: path
+ *         name: identifier
+ *         required: true
+ *         description: The identifier of the metric to update
+ *         schema:
+ *           type: string
+ *           example: "userEngagement"
+ *     requestBody:
+ *       required: true
+ *       content:
+ *         application/json:
+ *           schema:
+ *             type: object
+ *             properties:
+ *               enabled:
+ *                 type: boolean
+ *                 description: Whether the metric is enabled
+ *                 example: true
+ *     responses:
+ *       200:
+ *         description: Metric updated successfully
+ *       400:
+ *         description: Invalid input
+ *       500:
+ *         description: Internal server error
+ */
+router.put('/:identifier', updateMetric);
 
 export default router;
