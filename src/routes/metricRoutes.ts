@@ -7,6 +7,8 @@ const router = Router();
  * @swagger
  * /metrics:
  *   post:
+ *     tags:
+ *       - metrics
  *     summary: Adds an array of metrics to the database
  *     requestBody:
  *       required: true

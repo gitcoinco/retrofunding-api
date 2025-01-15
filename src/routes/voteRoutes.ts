@@ -7,6 +7,8 @@ const router = Router();
  * @swagger
  * /vote:
  *   post:
+ *     tags:
+ *       - vote
  *     summary: Submit a vote for a specific pool
  *     requestBody:
  *       required: true
@@ -63,6 +65,8 @@ router.post('/', submitVote);
  * @swagger
  * /vote/predict:
  *   post:
+ *     tags:
+ *       - vote
  *     summary: Predicts the distribution of a pool based on chainId and alloPoolId
  *     requestBody:
  *       required: true
