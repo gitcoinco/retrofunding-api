@@ -5,6 +5,7 @@ import {
   OneToMany,
   Unique,
   OneToOne,
+  JoinColumn,
 } from 'typeorm';
 import { Application } from '@/entity/Application';
 import { EligibilityCriteria } from './EligibilityCriteria';
@@ -27,10 +28,8 @@ export class Pool {
   @Column()
   alloPoolId: string;
 
-  @OneToOne(
-    () => EligibilityCriteria,
-    eligibilityCriteria => eligibilityCriteria.pool
-  )
+  @OneToOne(() => EligibilityCriteria)
+  @JoinColumn()
   eligibilityCriteria: EligibilityCriteria;
 
   @OneToMany(() => Application, application => application.pool)

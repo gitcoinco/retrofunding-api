@@ -41,7 +41,7 @@ const router = Router();
  *               metricIdentifiers:
  *                 type: array
  *                 description: The identifiers of the metrics to associate with the pool
- *                 example: ["userEngagement"]  # Example of metricsIds
+ *                 example: ["userEngagement", "twitterAge", "gasFees"]  # Example of metricsIds
  *             required:
  *               - alloPoolId
  *               - chainId
@@ -55,14 +55,6 @@ const router = Router();
  *         description: Invalid poolId or chainId format
  *       500:
  *         description: Internal server error
- *     examples:
- *       application/json:
- *         - value:
- *             alloPoolId: "615" # Example of poolId
- *             chainId: "11155111" # Example of chainId (Sepolia)
- *             eligibilityType: "linear"
- *             eligibilityData: { "voters": ["0xB8cEF765721A6da910f14Be93e7684e9a3714123", "0x5645bF145C3f1E974D0D7FB91bf3c68592ab5012"] }
- *             metricIdentifiers: ["userEngagement"]
  */
 router.post('/', createPool);
 

@@ -1,11 +1,4 @@
-import {
-  Entity,
-  PrimaryGeneratedColumn,
-  Column,
-  Unique,
-  OneToOne,
-} from 'typeorm';
-import { Pool } from './Pool';
+import { Entity, PrimaryGeneratedColumn, Column, Unique } from 'typeorm';
 
 export enum EligibilityType {
   Linear = 'linear',
@@ -29,11 +22,6 @@ export class EligibilityCriteria {
     enum: EligibilityType,
   })
   eligibilityType: EligibilityType;
-
-  @OneToOne(() => Pool, pool => pool.id, {
-    onDelete: 'CASCADE',
-  })
-  pool: Pool;
 
   @Column('json')
   data: any;
