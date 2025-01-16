@@ -19,7 +19,7 @@ const router = Router();
  *               alloPoolId:
  *                 type: string
  *                 description: The ID of the pool to link the application to
- *                 example: "11155111"  # Example of poolId
+ *                 example: "615"  # Example of poolId
  *               chainId:
  *                 type: number
  *                 description: The chain ID associated with the pool
@@ -27,7 +27,7 @@ const router = Router();
  *               alloApplicationId:
  *                 type: string
  *                 description: The ID of the application to create
- *                 example: "app-123"  # Example of application ID
+ *                 example: "0"  # Example of application ID
  *             required:
  *               - alloPoolId
  *               - chainId

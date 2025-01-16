@@ -53,7 +53,7 @@ export const createApplication = async (
     })
   );
 
-  if (errorFetching !== null || applicationData === null) {
+  if (errorFetching !== undefined || applicationData === undefined) {
     res.status(404).json({ message: 'Application not found on indexer' });
     throw new NotFoundError('Application not found on indexer');
   }

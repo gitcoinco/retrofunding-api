@@ -83,7 +83,7 @@ export const submitVote = async (
     })
   );
 
-  if (error !== null) {
+  if (error !== undefined) {
     res
       .status(500)
       .json({ message: 'Error submitting vote', error: error?.message });
