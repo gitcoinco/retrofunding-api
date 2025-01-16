@@ -51,3 +51,16 @@ export const getApplicationWithRound = gql`
     }
   }
 `;
+
+export const getRoundDonations = gql`
+  query RoundDonations($chainId: Int!, $roundId: String!) {
+    donations(
+      filter: { chainId: { equalTo: $chainId }, roundId: { equalTo: $roundId } }
+    ) {
+      id
+      applicationId
+      amount
+      tokenAddress
+    }
+  }
+`;

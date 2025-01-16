@@ -5,12 +5,14 @@ import type {
   ApplicationRoundQueryResponse,
   ApplicationWithRound,
   ManagerRolesResponse,
+  RoundDonationsQueryResponse,
 } from './types';
 import request from 'graphql-request';
 import {
   getRoundWithApplications,
   getApplicationWithRound,
   getRoundManager,
+  getRoundDonations,
 } from './queries';
 import type { Logger } from 'winston';
 import { IsNullError } from '@/errors';
@@ -176,6 +178,34 @@ class IndexerClient {
         `Failed to fetch round with single application: ${error.message}`,
         { error }
       );
+      throw error;
+    }
+  }
+
+  async getRoundDonations({
+    chainId,
+    roundId,
+  }: {
+    chainId: number;
+    roundId: string;
+  }): Promise<RoundDonationsQueryResponse> {
+    const requestVariables = {
+      chainId,
+      roundId,
+    };
+
+    try {
+      const response: RoundDonationsQueryResponse = await request(
+        this.indexerEndpoint,
+        getRoundDonations,
+        requestVariables
+      );
+
+      return response;
+    } catch (error) {
+      this.logger.error(`Failed to fetch round donations: ${error.message}`, {
+        error,
+      });
       throw error;
     }
   }
