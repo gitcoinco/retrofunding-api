@@ -46,6 +46,25 @@ const router = Router();
  *               - description
  *               - orientation
  *               - enabled
+ *           examples:
+ *             example1:
+ *               summary: User Engagement Metric
+ *               value:
+ *                 - identifier: "userEngagement"
+ *                   name: "User Engagement"
+ *                   description: "Measures how users interact with the application"
+ *                   orientation: "increase"
+ *                   enabled: true
+ *                 - identifier: "twitterAge"
+ *                   name: "Twitter Account Age"
+ *                   description: "Measures the age of a Twitter account"
+ *                   orientation: "increase"
+ *                   enabled: true
+ *                 - identifier: "gasFees"
+ *                   name: "Gas Fees"
+ *                   description: "Measures the transaction fees on the blockchain"
+ *                   orientation: "decrease"
+ *                   enabled: true
  *     responses:
  *       201:
  *         description: Metrics added successfully
