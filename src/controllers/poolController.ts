@@ -71,7 +71,11 @@ export const createPool = async (
     })
   );
 
-  if (errorFetching !== undefined || indexerPoolData === null) {
+  if (
+    errorFetching !== undefined ||
+    indexerPoolData === undefined ||
+    indexerPoolData.length === 0
+  ) {
     res.status(404).json({ message: 'Pool not found on indexer' });
     throw new NotFoundError('Pool not found on indexer');
   }

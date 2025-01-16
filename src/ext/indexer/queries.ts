@@ -3,7 +3,11 @@ import { gql } from 'graphql-request';
 export const getRoundManager = gql`
   query RoundManager($chainId: Int!, $alloPoolId: String!) {
     rounds(
-      filter: { chainId: { equalTo: $chainId }, id: { equalTo: $alloPoolId } }
+      filter: {
+        chainId: { equalTo: $chainId }
+        id: { equalTo: $alloPoolId }
+        strategyName: { equalTo: "allov2.EasyRetroFundingStrategy" }
+      }
     ) {
       roles {
         address
@@ -15,7 +19,11 @@ export const getRoundManager = gql`
 export const getRoundWithApplications = gql`
   query RoundApplications($chainId: Int!, $roundId: String!) {
     rounds(
-      filter: { chainId: { equalTo: $chainId }, id: { equalTo: $roundId } }
+      filter: {
+        chainId: { equalTo: $chainId }
+        id: { equalTo: $roundId }
+        strategyName: { equalTo: "allov2.EasyRetroFundingStrategy" }
+      }
     ) {
       chainId
       id
