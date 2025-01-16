@@ -1,8 +1,18 @@
 import { type Request, type Response } from 'express';
 import voteService from '@/service/VoteService';
 import poolService from '@/service/PoolService';
-import { catchError, recoverSignerAddress, validateRequest } from '@/utils';
-import { BadRequestError, ServerError, UnauthorizedError } from '@/errors';
+import {
+  catchError,
+  isPoolFinalised,
+  recoverSignerAddress,
+  validateRequest,
+} from '@/utils';
+import {
+  ActionNotAllowedError,
+  BadRequestError,
+  ServerError,
+  UnauthorizedError,
+} from '@/errors';
 import { createLogger } from '@/logger';
 import { calculate } from '@/utils/calculate';
 import { type Pool } from '@/entity/Pool';
@@ -70,6 +80,11 @@ export const submitVote = async (
   ) {
     res.status(401).json({ message: 'Not Authorzied' });
     throw new BadRequestError('Not Authorzied');
+  }
+
+  if (await isPoolFinalised(alloPoolId, chainId)) {
+    res.status(400).json({ message: 'Pool is finalised' });
+    throw new ActionNotAllowedError('Pool is finalised');
   }
 
   const [error] = await catchError(

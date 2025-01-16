@@ -5,6 +5,7 @@ import { indexerClient, Status } from '@/ext/indexer';
 import metricService from '@/service/MetricService';
 import poolService from '@/service/PoolService';
 import voteService from '@/service/VoteService';
+import { isPoolFinalised } from '@/utils';
 
 interface MetricFetcherResponse {
   alloApplicationId: string;
@@ -67,17 +68,6 @@ const getApprovedAlloApplicationIds = async (
       .filter(application => application.status === Status.APPROVED)
       .map(application => application.id) ?? []
   );
-};
-
-const isPoolFinalised = async (
-  alloPoolId: string,
-  chainId: number
-): Promise<boolean> => {
-  const roundDonations = await indexerClient.getRoundDonations({
-    chainId,
-    roundId: alloPoolId,
-  });
-  return roundDonations.donations.length > 0;
 };
 
 // TODO: Implement the gr8LucasMetricFetcher function to fetch metrics from the external endpoint
