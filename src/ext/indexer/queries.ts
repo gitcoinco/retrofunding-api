@@ -60,15 +60,22 @@ export const getApplicationWithRound = gql`
   }
 `;
 
-export const getRoundDonations = gql`
-  query RoundDonations($chainId: Int!, $roundId: String!) {
-    donations(
-      filter: { chainId: { equalTo: $chainId }, roundId: { equalTo: $roundId } }
+export const getRoundDistributions = gql`
+  query RoundDistributions($chainId: Int!, $roundId: String!) {
+    rounds(
+      filter: {
+        chainId: { equalTo: $chainId }
+        id: { equalTo: $roundId }
+        strategyName: { equalTo: "allov2.EasyRetroFundingStrategy" }
+      }
     ) {
-      id
-      applicationId
-      amount
-      tokenAddress
+      totalDistributed
+      applications(
+        filter: { distributionTransaction: { notEqualTo: "null" } }
+      ) {
+        id
+        distributionTransaction
+      }
     }
   }
 `;

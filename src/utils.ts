@@ -83,9 +83,9 @@ export const isPoolFinalised = async (
   alloPoolId: string,
   chainId: number
 ): Promise<boolean> => {
-  const roundDonations = await indexerClient.getRoundDonations({
+  const roundDistributions = await indexerClient.getRoundDistributions({
     chainId,
     roundId: alloPoolId,
   });
-  return roundDonations.donations.length > 0;
+  return roundDistributions.rounds.length > 0;
 };
