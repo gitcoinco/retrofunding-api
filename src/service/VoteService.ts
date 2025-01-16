@@ -15,6 +15,7 @@ class VoteService {
       // Update existing vote
       voteRepository.merge(existingVote, voteData);
       await voteRepository.save(existingVote);
+      return;
     }
 
     // Create new vote

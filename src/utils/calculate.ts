@@ -4,6 +4,7 @@ import { ActionNotAllowedError, NotFoundError } from '@/errors';
 import { indexerClient, Status } from '@/ext/indexer';
 import metricService from '@/service/MetricService';
 import poolService from '@/service/PoolService';
+import voteService from '@/service/VoteService';
 
 interface MetricFetcherResponse {
   alloApplicationId: string;
@@ -12,64 +13,71 @@ interface MetricFetcherResponse {
 }
 
 // Hardcoded votes for testing purposes
-const getHardcodedVotes = (): Array<Partial<Vote>> => {
-  return [
-    {
-      ballot: [
-        { metricIdentifier: 'twitterAccountAge', voteShare: 50 },
-        { metricIdentifier: 'gasFees', voteShare: 30 },
-        { metricIdentifier: 'userEngagement', voteShare: 20 },
-      ],
-    },
-    {
-      ballot: [
-        { metricIdentifier: 'twitterAccountAge', voteShare: 40 },
-        { metricIdentifier: 'gasFees', voteShare: 50 },
-        { metricIdentifier: 'userEngagement', voteShare: 10 },
-      ],
-    },
-    {
-      ballot: [
-        { metricIdentifier: 'twitterAccountAge', voteShare: 60 },
-        { metricIdentifier: 'gasFees', voteShare: 20 },
-        { metricIdentifier: 'userEngagement', voteShare: 20 },
-      ],
-    },
-    {
-      ballot: [
-        { metricIdentifier: 'twitterAccountAge', voteShare: 30 },
-        { metricIdentifier: 'gasFees', voteShare: 60 },
-        { metricIdentifier: 'userEngagement', voteShare: 10 },
-      ],
-    },
-    {
-      ballot: [
-        { metricIdentifier: 'twitterAccountAge', voteShare: 20 },
-        { metricIdentifier: 'gasFees', voteShare: 30 },
-        { metricIdentifier: 'userEngagement', voteShare: 50 },
-      ],
-    },
-  ];
-};
+// const getHardcodedVotes = (): Array<Partial<Vote>> => {
+//   return [
+//     {
+//       ballot: [
+//         { metricIdentifier: 'twitterAccountAge', voteShare: 50 },
+//         { metricIdentifier: 'gasFees', voteShare: 30 },
+//         { metricIdentifier: 'userEngagement', voteShare: 20 },
+//       ],
+//     },
+//     {
+//       ballot: [
+//         { metricIdentifier: 'twitterAccountAge', voteShare: 40 },
+//         { metricIdentifier: 'gasFees', voteShare: 50 },
+//         { metricIdentifier: 'userEngagement', voteShare: 10 },
+//       ],
+//     },
+//     {
+//       ballot: [
+//         { metricIdentifier: 'twitterAccountAge', voteShare: 60 },
+//         { metricIdentifier: 'gasFees', voteShare: 20 },
+//         { metricIdentifier: 'userEngagement', voteShare: 20 },
+//       ],
+//     },
+//     {
+//       ballot: [
+//         { metricIdentifier: 'twitterAccountAge', voteShare: 30 },
+//         { metricIdentifier: 'gasFees', voteShare: 60 },
+//         { metricIdentifier: 'userEngagement', voteShare: 10 },
+//       ],
+//     },
+//     {
+//       ballot: [
+//         { metricIdentifier: 'twitterAccountAge', voteShare: 20 },
+//         { metricIdentifier: 'gasFees', voteShare: 30 },
+//         { metricIdentifier: 'userEngagement', voteShare: 50 },
+//       ],
+//     },
+//   ];
+// };
 
 const getApprovedAlloApplicationIds = async (
   alloPoolId: string,
   chainId: number
-): Promise<[boolean, string[]]> => {
+): Promise<string[]> => {
   const indexerPoolData = await indexerClient.getRoundWithApplications({
     chainId,
     roundId: alloPoolId,
   });
 
-  // TODO: Implement this from indexer
-  const isFinalised = false;
-
-  return [
-    isFinalised,
+  return (
     indexerPoolData?.applications
       .filter(application => application.status === Status.APPROVED)
-      .map(application => application.id) ?? [],
-  ];
+      .map(application => application.id) ?? []
+  );
+};
+
+const isPoolFinalised = async (
+  alloPoolId: string,
+  chainId: number
+): Promise<boolean> => {
+  const roundDonations = await indexerClient.getRoundDonations({
+    chainId,
+    roundId: alloPoolId,
+  });
+  return roundDonations.donations.length > 0;
 };
 
 // TODO: Implement the gr8LucasMetricFetcher function to fetch metrics from the external endpoint
@@ -79,6 +87,17 @@ const gr8LucasMetricFetcher = async (
 ): Promise<MetricFetcherResponse[]> => {
   // Hardcoded object for now
   return [
+    {
+      alloApplicationId: '0',
+      metricIdentifier: 'twitterAccountAge',
+      metricScore: 0.5,
+    },
+    { alloApplicationId: '0', metricIdentifier: 'gasFees', metricScore: 10 },
+    {
+      alloApplicationId: '0',
+      metricIdentifier: 'userEngagement',
+      metricScore: 0.6,
+    },
     {
       alloApplicationId: '1',
       metricIdentifier: 'twitterAccountAge',
@@ -112,17 +131,6 @@ const gr8LucasMetricFetcher = async (
       metricIdentifier: 'userEngagement',
       metricScore: 0.4,
     },
-    {
-      alloApplicationId: '4',
-      metricIdentifier: 'twitterAccountAge',
-      metricScore: 0.5,
-    },
-    { alloApplicationId: '4', metricIdentifier: 'gasFees', metricScore: 10 },
-    {
-      alloApplicationId: '4',
-      metricIdentifier: 'userEngagement',
-      metricScore: 0.6,
-    },
   ];
 };
 
@@ -130,9 +138,11 @@ const fetchVotes = async (
   chainId: number,
   alloPoolId: string
 ): Promise<Array<Partial<Vote>>> => {
-  // const votes = await voteService.getVotesByChainIdAndAlloPoolId(chainId, alloPoolId);
-  const votes = getHardcodedVotes();
-  return votes;
+  const votes = await voteService.getVotesByChainIdAndAlloPoolId(
+    chainId,
+    alloPoolId
+  );
+  return votes ?? [];
 };
 
 // Function to determine if a metric is increasing or decreasing
@@ -140,7 +150,7 @@ const isMetricIncreasing = (metricIdentifier: string): boolean => {
   const metric = metricService.getEnabledMetricsByIdentifiers([
     metricIdentifier,
   ]);
-  if (metric == null) {
+  if (metric === undefined) {
     throw new NotFoundError(`Metric not found`);
   }
   return metric[0].orientation === 'increase';
@@ -179,13 +189,15 @@ export const calculate = async (
   // Add unAccountedBallots to the votes
   if (unAccountedBallots !== undefined) votes.push(unAccountedBallots);
 
-  // Fetch approved allo application ids
-  const [isFinalised, approvedAlloApplicationIds] =
-    await getApprovedAlloApplicationIds(alloPoolId, chainId);
-
-  if (isFinalised) {
+  if (await isPoolFinalised(alloPoolId, chainId)) {
     throw new ActionNotAllowedError('Pool is finalised');
   }
+
+  // Fetch approved allo application ids
+  const approvedAlloApplicationIds = await getApprovedAlloApplicationIds(
+    alloPoolId,
+    chainId
+  );
 
   // Fetch metrics from the external endpoint
   const fetchedApplicaionMetricScores = await gr8LucasMetricFetcher(

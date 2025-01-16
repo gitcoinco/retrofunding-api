@@ -20,7 +20,7 @@ const router = Router();
  *               voter:
  *                 type: string
  *                 description: Address of the voter
- *                 example: "0x1234567890abcdef1234567890abcdef12345678"
+ *                 example: "0xB8cEF765721A6da910f14Be93e7684e9a3714123"
  *               signature:
  *                 type: string
  *                 description: Signature of the voter
@@ -28,11 +28,11 @@ const router = Router();
  *               alloPoolId:
  *                 type: string
  *                 description: The ID of the pool (from Allo) to which the vote is submitted
- *                 example: "609"
+ *                 example: "615"
  *               chainId:
  *                 type: number
  *                 description: The chain ID associated with the pool
- *                 example: 42161
+ *                 example: 11155111
  *               ballot:
  *                 type: array
  *                 description: Array of votes for metrics
@@ -46,10 +46,12 @@ const router = Router();
  *                       type: number
  *                       description: Vote share percentage allocated to the metric
  *                 example:
- *                   - metricId: "twitterAge"
- *                     voteShare: 150
- *                   - metricId: "githubFollowers"
+ *                   - metricId: "userEngagement"
  *                     voteShare: 50
+ *                   - metricId: "twitterAccountAge"
+ *                     voteShare: 30
+ *                   - metricId: "gasFees"
+ *                     voteShare: 20
  *             required:
  *               - voter
  *               - signature
@@ -83,11 +85,11 @@ router.post('/', submitVote);
  *               alloPoolId:
  *                 type: string
  *                 description: The ID of the pool to predict
- *                 example: "609"
+ *                 example: "615"
  *               chainId:
  *                 type: number
  *                 description: The chain ID associated with the pool
- *                 example: 42161
+ *                 example: 11155111
  *               ballot:
  *                 type: array
  *                 description: Array of votes for metrics
@@ -101,10 +103,12 @@ router.post('/', submitVote);
  *                       type: number
  *                       description: Vote share percentage allocated to the metric
  *                 example:
- *                   - metricId: 1
- *                     voteShare: 50
- *                   - metricId: 2
- *                     voteShare: 50
+ *                   - metricId: "userEngagement"
+ *                     voteShare: 20
+ *                   - metricId: "twitterAccountAge"
+ *                     voteShare: 60
+ *                   - metricId: "gasFees"
+ *                     voteShare: 20
  *             required:
  *               - alloPoolId
  *               - chainId
