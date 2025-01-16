@@ -201,7 +201,10 @@ export const calculateDistribution = async (req, res): Promise<void> => {
     });
   }
 
-  res.status(200).json({ message: 'Distribution updated successfully' });
+  res.status(200).json({
+    message: 'Distribution updated successfully',
+    data: distribution,
+  });
 };
 
 export const updateEligibilityCriteria = async (req, res): Promise<void> => {

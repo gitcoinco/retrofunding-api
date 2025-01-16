@@ -121,6 +121,25 @@ router.put('/sync', syncPool);
  *     responses:
  *       200:
  *         description: Distribution calculated successfully
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 message:
+ *                   type: string
+ *                   example: "Distribution updated successfully"
+ *                 data:
+ *                   type: array
+ *                   items:
+ *                     type: object
+ *                     properties:
+ *                       alloApplicationId:
+ *                         type: string
+ *                         example: "1"
+ *                       distribution_percentage:
+ *                         type: number
+ *                         example: 35.13513513513514
  *       400:
  *         description: Invalid poolId or chainId format
  *       500:
