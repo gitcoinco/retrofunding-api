@@ -49,13 +49,14 @@ export const submitVote = async (
     typeof alloPoolId !== 'string' ||
     typeof chainId !== 'number' ||
     typeof signature !== 'string' ||
-    (Array.isArray(ballot) &&
-      ballot.every(
-        item =>
-          typeof item.metricIdentifier === 'string' &&
-          typeof item.voteShare === 'number'
-      ))
+    !Array.isArray(ballot) ||
+    !ballot.every(
+      item =>
+        typeof item.metricIdentifier === 'string' &&
+        typeof item.voteShare === 'number'
+    )
   ) {
+    res.status(400).json({ message: 'Invalid request data' });
     throw new BadRequestError('Invalid request data');
   }
 
@@ -150,14 +151,13 @@ export const predictDistribution = async (
     typeof alloPoolId !== 'string' ||
     typeof chainId !== 'number' ||
     !Array.isArray(ballot) ||
-    (Array.isArray(ballot) &&
-      ballot.every(
-        item =>
-          typeof item.metricName === 'string' &&
-          (item.metricId === undefined || typeof item.metricId === 'number') &&
-          typeof item.voteShare === 'number'
-      ))
+    !ballot.every(
+      item =>
+        typeof item.metricIdentifier === 'string' &&
+        typeof item.voteShare === 'number'
+    )
   ) {
+    res.status(400).json({ message: 'Invalid request data' });
     throw new BadRequestError('Invalid request data');
   }
 
@@ -169,7 +169,7 @@ export const predictDistribution = async (
     calculate(chainId, alloPoolId, unAccountedBallots)
   );
 
-  if (errorFetching !== null || distribution === undefined) {
+  if (errorFetching !== undefined || distribution === undefined) {
     logger.error(`Failed to calculate distribution: ${errorFetching?.message}`);
     res.status(500).json({
       message: 'Error calculating distribution',

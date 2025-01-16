@@ -111,7 +111,7 @@ const gr8LucasMetricFetcher = async (
       metricScore: 0.7,
     },
     {
-      alloApplicationId: '2',
+      alloApplicationId: '3',
       metricIdentifier: 'twitterAge',
       metricScore: 3,
     },
@@ -156,8 +156,7 @@ const normalizeScore = (
 ): number => {
   let normalizedScore = rawScore / maxValue;
   if (!isIncreasing) {
-    const POSITIVE_CONSTANT = 0.1;
-    normalizedScore = POSITIVE_CONSTANT + (1 - normalizedScore);
+    normalizedScore = +(1 - normalizedScore);
   }
   return normalizedScore;
 };
@@ -241,20 +240,20 @@ export const calculate = async (
     const { maxValue } = metricBounds[metricIdentifier];
     const isIncreasing = await isMetricIncreasing(metricIdentifier);
     const normalizedScore = normalizeScore(rawScore, maxValue, isIncreasing);
-
     // Get vote share for the metric
     const totalVoteShare = votes.reduce((sum, vote) => {
       const ballotItem = vote.ballot?.find(
         item => item.metricIdentifier === metricIdentifier
       );
-      return ballotItem != null ? sum + ballotItem.voteShare : sum;
+
+      return ballotItem !== undefined ? sum + ballotItem.voteShare : sum;
     }, 0);
 
     // Weighted score for this metric
     const weightedScore = (normalizedScore * totalVoteShare) / 100;
 
     // Add to application's total score
-    if (appToWeightedScores[alloApplicationId] == null) {
+    if (appToWeightedScores[alloApplicationId] === undefined) {
       appToWeightedScores[alloApplicationId] = 0;
     }
     appToWeightedScores[alloApplicationId] += weightedScore;
@@ -282,20 +281,6 @@ export const calculate = async (
   distributions.sort(
     (a, b) => b.distribution_percentage - a.distribution_percentage
   );
-
-  // Log all the values
-  console.log('=====> pool', pool);
-  console.log('=====> approvedAlloApplicationIds', approvedAlloApplicationIds);
-  console.log('=====> votes', votes);
-  console.log(
-    '=====> fetchedApplicationMetricScores',
-    fetchedApplicationMetricScores
-  );
-  console.log('=====> totalWeightedScore', totalWeightedScore);
-  console.log('=====> appToWeightedScores', appToWeightedScores);
-  console.log('=====> applicationToMetricsScores', applicationToMetricsScores);
-  console.log('=====> metricBounds', metricBounds);
-  console.log('=====> distributions', distributions);
 
   return distributions;
 };

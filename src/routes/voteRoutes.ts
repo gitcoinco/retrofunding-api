@@ -46,11 +46,11 @@ const router = Router();
  *                       type: number
  *                       description: Vote share percentage allocated to the metric
  *                 example:
- *                   - metricId: "userEngagement"
+ *                   - metricIdentifier: "userEngagement"
  *                     voteShare: 50
- *                   - metricId: "twitterAge"
+ *                   - metricIdentifier: "twitterAge"
  *                     voteShare: 30
- *                   - metricId: "gasFees"
+ *                   - metricIdentifier: "gasFees"
  *                     voteShare: 20
  *             required:
  *               - voter
@@ -103,11 +103,11 @@ router.post('/', submitVote);
  *                       type: number
  *                       description: Vote share percentage allocated to the metric
  *                 example:
- *                   - metricId: "userEngagement"
+ *                   - metricIdentifier: "userEngagement"
  *                     voteShare: 20
- *                   - metricId: "twitterAge"
+ *                   - metricIdentifier: "twitterAge"
  *                     voteShare: 60
- *                   - metricId: "gasFees"
+ *                   - metricIdentifier: "gasFees"
  *                     voteShare: 20
  *             required:
  *               - alloPoolId

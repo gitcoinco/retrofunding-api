@@ -176,7 +176,7 @@ export const calculateDistribution = async (req, res): Promise<void> => {
     calculate(chainId, alloPoolId)
   );
 
-  if (errorFetching !== null || distribution === undefined) {
+  if (errorFetching !== undefined || distribution === undefined) {
     logger.error(`Failed to calculate distribution: ${errorFetching?.message}`);
     res.status(500).json({
       message: 'Error calculating distribution',
@@ -189,7 +189,7 @@ export const calculateDistribution = async (req, res): Promise<void> => {
     poolService.updateDistribution(alloPoolId, chainId, distribution)
   );
 
-  if (errorUpdating !== null || updatedDistribution === null) {
+  if (errorUpdating !== undefined || updatedDistribution === undefined) {
     logger.error(`Failed to update distribution: ${errorUpdating?.message}`);
     res.status(500).json({
       message: 'Error updating distribution',
