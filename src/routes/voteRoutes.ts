@@ -48,7 +48,7 @@ const router = Router();
  *                 example:
  *                   - metricId: "userEngagement"
  *                     voteShare: 50
- *                   - metricId: "twitterAccountAge"
+ *                   - metricId: "twitterAge"
  *                     voteShare: 30
  *                   - metricId: "gasFees"
  *                     voteShare: 20
@@ -105,7 +105,7 @@ router.post('/', submitVote);
  *                 example:
  *                   - metricId: "userEngagement"
  *                     voteShare: 20
- *                   - metricId: "twitterAccountAge"
+ *                   - metricId: "twitterAge"
  *                     voteShare: 60
  *                   - metricId: "gasFees"
  *                     voteShare: 20

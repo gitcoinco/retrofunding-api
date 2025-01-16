@@ -18,35 +18,35 @@ interface MetricFetcherResponse {
 //   return [
 //     {
 //       ballot: [
-//         { metricIdentifier: 'twitterAccountAge', voteShare: 50 },
+//         { metricIdentifier: 'twitterAge', voteShare: 50 },
 //         { metricIdentifier: 'gasFees', voteShare: 30 },
 //         { metricIdentifier: 'userEngagement', voteShare: 20 },
 //       ],
 //     },
 //     {
 //       ballot: [
-//         { metricIdentifier: 'twitterAccountAge', voteShare: 40 },
+//         { metricIdentifier: 'twitterAge', voteShare: 40 },
 //         { metricIdentifier: 'gasFees', voteShare: 50 },
 //         { metricIdentifier: 'userEngagement', voteShare: 10 },
 //       ],
 //     },
 //     {
 //       ballot: [
-//         { metricIdentifier: 'twitterAccountAge', voteShare: 60 },
+//         { metricIdentifier: 'twitterAge', voteShare: 60 },
 //         { metricIdentifier: 'gasFees', voteShare: 20 },
 //         { metricIdentifier: 'userEngagement', voteShare: 20 },
 //       ],
 //     },
 //     {
 //       ballot: [
-//         { metricIdentifier: 'twitterAccountAge', voteShare: 30 },
+//         { metricIdentifier: 'twitterAge', voteShare: 30 },
 //         { metricIdentifier: 'gasFees', voteShare: 60 },
 //         { metricIdentifier: 'userEngagement', voteShare: 10 },
 //       ],
 //     },
 //     {
 //       ballot: [
-//         { metricIdentifier: 'twitterAccountAge', voteShare: 20 },
+//         { metricIdentifier: 'twitterAge', voteShare: 20 },
 //         { metricIdentifier: 'gasFees', voteShare: 30 },
 //         { metricIdentifier: 'userEngagement', voteShare: 50 },
 //       ],
@@ -79,7 +79,7 @@ const gr8LucasMetricFetcher = async (
   return [
     {
       alloApplicationId: '0',
-      metricIdentifier: 'twitterAccountAge',
+      metricIdentifier: 'twitterAge',
       metricScore: 0.5,
     },
     { alloApplicationId: '0', metricIdentifier: 'gasFees', metricScore: 10 },
@@ -90,7 +90,7 @@ const gr8LucasMetricFetcher = async (
     },
     {
       alloApplicationId: '1',
-      metricIdentifier: 'twitterAccountAge',
+      metricIdentifier: 'twitterAge',
       metricScore: 2,
     },
     { alloApplicationId: '1', metricIdentifier: 'gasFees', metricScore: 30 },
@@ -101,7 +101,7 @@ const gr8LucasMetricFetcher = async (
     },
     {
       alloApplicationId: '2',
-      metricIdentifier: 'twitterAccountAge',
+      metricIdentifier: 'twitterAge',
       metricScore: 1,
     },
     { alloApplicationId: '2', metricIdentifier: 'gasFees', metricScore: 20 },
@@ -112,7 +112,7 @@ const gr8LucasMetricFetcher = async (
     },
     {
       alloApplicationId: '2',
-      metricIdentifier: 'twitterAccountAge',
+      metricIdentifier: 'twitterAge',
       metricScore: 3,
     },
     { alloApplicationId: '3', metricIdentifier: 'gasFees', metricScore: 40 },
@@ -136,8 +136,10 @@ const fetchVotes = async (
 };
 
 // Function to determine if a metric is increasing or decreasing
-const isMetricIncreasing = (metricIdentifier: string): boolean => {
-  const metric = metricService.getEnabledMetricsByIdentifiers([
+const isMetricIncreasing = async (
+  metricIdentifier: string
+): Promise<boolean> => {
+  const metric = await metricService.getEnabledMetricsByIdentifiers([
     metricIdentifier,
   ]);
   if (metric === undefined) {
@@ -190,13 +192,13 @@ export const calculate = async (
   );
 
   // Fetch metrics from the external endpoint
-  const fetchedApplicaionMetricScores = await gr8LucasMetricFetcher(
+  const fetchedApplicationMetricScores = await gr8LucasMetricFetcher(
     alloPoolId,
     chainId
   );
 
   // Filter the applicationToMetricsScores array to only include approved applications
-  const applicationToMetricsScores = fetchedApplicaionMetricScores.filter(
+  const applicationToMetricsScores = fetchedApplicationMetricScores.filter(
     metric => approvedAlloApplicationIds.includes(metric.alloApplicationId)
   );
 
@@ -237,7 +239,7 @@ export const calculate = async (
     }
 
     const { maxValue } = metricBounds[metricIdentifier];
-    const isIncreasing = isMetricIncreasing(metricIdentifier);
+    const isIncreasing = await isMetricIncreasing(metricIdentifier);
     const normalizedScore = normalizeScore(rawScore, maxValue, isIncreasing);
 
     // Get vote share for the metric
@@ -280,6 +282,20 @@ export const calculate = async (
   distributions.sort(
     (a, b) => b.distribution_percentage - a.distribution_percentage
   );
+
+  // Log all the values
+  console.log('=====> pool', pool);
+  console.log('=====> approvedAlloApplicationIds', approvedAlloApplicationIds);
+  console.log('=====> votes', votes);
+  console.log(
+    '=====> fetchedApplicationMetricScores',
+    fetchedApplicationMetricScores
+  );
+  console.log('=====> totalWeightedScore', totalWeightedScore);
+  console.log('=====> appToWeightedScores', appToWeightedScores);
+  console.log('=====> applicationToMetricsScores', applicationToMetricsScores);
+  console.log('=====> metricBounds', metricBounds);
+  console.log('=====> distributions', distributions);
 
   return distributions;
 };
