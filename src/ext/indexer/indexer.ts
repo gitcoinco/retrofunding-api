@@ -200,9 +200,12 @@ class IndexerClient {
 
       return response;
     } catch (error) {
-      this.logger.error(`Failed to fetch round distributions: ${error.message}`, {
-        error,
-      });
+      this.logger.error(
+        `Failed to fetch round distributions: ${error.message}`,
+        {
+          error,
+        }
+      );
       throw error;
     }
   }
