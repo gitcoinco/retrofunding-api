@@ -237,3 +237,39 @@ export const updateEligibilityCriteria = async (req, res): Promise<void> => {
     message: 'Eligibility criteria updated successfully',
   });
 };
+
+export const getDistribution = async (
+  req: Request,
+  res: Response
+): Promise<void> => {
+  try {
+    const { alloPoolId, chainId } = req.body as PoolIdChainId;
+
+    logger.info(
+      `Received get distribution request for chainId: ${chainId}, alloPoolId: ${alloPoolId}`
+    );
+
+    const [errorFetching, pool] = await catchError(
+      poolService.getPoolByChainIdAndAlloPoolId(chainId, alloPoolId)
+    );
+
+    if (errorFetching !== undefined || pool === undefined || pool === null) {
+      logger.warn(`Failed to fetch distribution: ${errorFetching?.message}`);
+      res.status(404).json({
+        message: 'Distribution not found. Please run calculation first.',
+      });
+      return;
+    }
+
+    const distribution = pool.distribution;
+
+    res.status(200).json({
+      data: distribution,
+    });
+  } catch (error) {
+    console.error('Error getting distribution:', error);
+    res.status(500).json({
+      message: 'Internal server error',
+    });
+  }
+};

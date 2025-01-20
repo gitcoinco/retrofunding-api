@@ -3,6 +3,7 @@ import {
   syncPool,
   calculateDistribution,
   updateEligibilityCriteria,
+  getDistribution,
 } from '@/controllers/poolController';
 import { Router } from 'express';
 
@@ -191,5 +192,58 @@ router.post('/calculate', calculateDistribution);
  *         description: Internal server error
  */
 router.put('/eligibility', updateEligibilityCriteria);
+
+/**
+ * @swagger
+ * /pool/distribution:
+ *   post:
+ *     tags:
+ *       - pool
+ *     summary: Get the calculated distribution for a pool
+ *     requestBody:
+ *       required: true
+ *       content:
+ *         application/json:
+ *           schema:
+ *             type: object
+ *             properties:
+ *               alloPoolId:
+ *                 type: string
+ *                 description: The ID of the pool
+ *                 example: "615"
+ *               chainId:
+ *                 type: number
+ *                 description: The chain ID associated with the pool
+ *                 example: 11155111
+ *             required:
+ *               - alloPoolId
+ *               - chainId
+ *     responses:
+ *       200:
+ *         description: Distribution retrieved successfully
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 data:
+ *                   type: array
+ *                   items:
+ *                     type: object
+ *                     properties:
+ *                       alloApplicationId:
+ *                         type: string
+ *                         example: "1"
+ *                       distribution_percentage:
+ *                         type: number
+ *                         example: 35.13513513513514
+ *       404:
+ *         description: Distribution not found, calculation needed
+ *       400:
+ *         description: Invalid poolId or chainId format
+ *       500:
+ *         description: Internal server error
+ */
+router.post('/distribution', getDistribution);
 
 export default router;
