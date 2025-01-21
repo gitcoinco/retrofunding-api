@@ -66,7 +66,6 @@ class EligibilityCriteriaService {
 
     if (eligibilityCriteria.eligibilityType === EligibilityType.Linear) {
       const data = eligibilityCriteria.data as LinearEligibilityTypeData;
-      console.log('=====> data', data);
       return data.voters.includes(voter);
     }
 
