@@ -38,6 +38,7 @@
     "graphql-request": "6.1.0",
     "jsonwebtoken": "^9.0.2",
     "memory-cache": "^0.2.0",
+    "newrelic": "^12.11.1",
     "openai": "^4.71.1",
     "pg": "^8.4.0",
     "postgraphile": "^4.13.0",
@@ -52,7 +53,7 @@
   "scripts": {
     "dev": "ts-node-dev --respawn --transpile-only -r tsconfig-paths/register src/index.ts",
     "build": "tsc",
-    "start": "ts-node -r tsconfig-paths/register src/index.ts",
+    "start": "node -r newrelic -r tsconfig-paths/register -r ts-node/register src/index.ts",
     "lint": "eslint --fix --max-warnings=0",
     "prettier": "prettier \"src/**/*.{ts,json,md}\"",
     "format": "prettier \"src/**/*.{ts,json,md}\" --write",
