@@ -6,8 +6,6 @@ import voteRoutes from '@/routes/voteRoutes';
 
 const router = Router();
 
-console.log(process.env.NEW_RELIC_APP_NAME);
-
 router.use('/application', applicationRoutes);
 router.use('/pool', poolRoutes);
 router.use('/metrics', metricRoutes);
