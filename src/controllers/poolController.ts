@@ -71,7 +71,11 @@ export const createPool = async (
     })
   );
 
-  if (errorFetching !== undefined || indexerPoolData === null) {
+  if (
+    errorFetching !== undefined ||
+    indexerPoolData === undefined ||
+    indexerPoolData.length === 0
+  ) {
     res.status(404).json({ message: 'Pool not found on indexer' });
     throw new NotFoundError('Pool not found on indexer');
   }
@@ -176,7 +180,7 @@ export const calculateDistribution = async (req, res): Promise<void> => {
     calculate(chainId, alloPoolId)
   );
 
-  if (errorFetching !== null || distribution === undefined) {
+  if (errorFetching !== undefined || distribution === undefined) {
     logger.error(`Failed to calculate distribution: ${errorFetching?.message}`);
     res.status(500).json({
       message: 'Error calculating distribution',
@@ -189,7 +193,7 @@ export const calculateDistribution = async (req, res): Promise<void> => {
     poolService.updateDistribution(alloPoolId, chainId, distribution)
   );
 
-  if (errorUpdating !== null || updatedDistribution === null) {
+  if (errorUpdating !== undefined || updatedDistribution === undefined) {
     logger.error(`Failed to update distribution: ${errorUpdating?.message}`);
     res.status(500).json({
       message: 'Error updating distribution',
@@ -197,7 +201,10 @@ export const calculateDistribution = async (req, res): Promise<void> => {
     });
   }
 
-  res.status(200).json({ message: 'Distribution updated successfully' });
+  res.status(200).json({
+    message: 'Distribution updated successfully',
+    data: distribution,
+  });
 };
 
 export const updateEligibilityCriteria = async (req, res): Promise<void> => {

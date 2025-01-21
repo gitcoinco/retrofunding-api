@@ -11,6 +11,11 @@ import { Application } from '@/entity/Application';
 import { EligibilityCriteria } from './EligibilityCriteria';
 import { Vote } from './Vote';
 
+export interface DistributionData {
+  lastUpdated: string;
+  distribution: Distribution[];
+}
+
 export interface Distribution {
   alloApplicationId: string;
   distribution_percentage: number;
@@ -42,5 +47,5 @@ export class Pool {
   votes: Vote[];
 
   @Column('simple-json', { nullable: true })
-  distribution: Distribution[];
+  distributionData: DistributionData;
 }

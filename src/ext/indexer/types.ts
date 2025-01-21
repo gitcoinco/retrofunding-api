@@ -105,11 +105,12 @@ export interface ManagerRolesResponse {
   }>;
 }
 
-export interface RoundDonationsQueryResponse {
-  donations: Array<{
-    id: string;
-    applicationId: string;
-    amount: string;
-    tokenAddress: string;
+export interface RoundDistributionsQueryResponse {
+  rounds: Array<{
+    totalDistributed: string;
+    applications: Array<{
+      id: string;
+      distributionTransaction: string;
+    }>;
   }>;
 }

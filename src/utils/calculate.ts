@@ -5,6 +5,7 @@ import { indexerClient, Status } from '@/ext/indexer';
 import metricService from '@/service/MetricService';
 import poolService from '@/service/PoolService';
 import voteService from '@/service/VoteService';
+import { isPoolFinalised } from '@/utils';
 
 interface MetricFetcherResponse {
   alloApplicationId: string;
@@ -17,35 +18,35 @@ interface MetricFetcherResponse {
 //   return [
 //     {
 //       ballot: [
-//         { metricIdentifier: 'twitterAccountAge', voteShare: 50 },
+//         { metricIdentifier: 'twitterAge', voteShare: 50 },
 //         { metricIdentifier: 'gasFees', voteShare: 30 },
 //         { metricIdentifier: 'userEngagement', voteShare: 20 },
 //       ],
 //     },
 //     {
 //       ballot: [
-//         { metricIdentifier: 'twitterAccountAge', voteShare: 40 },
+//         { metricIdentifier: 'twitterAge', voteShare: 40 },
 //         { metricIdentifier: 'gasFees', voteShare: 50 },
 //         { metricIdentifier: 'userEngagement', voteShare: 10 },
 //       ],
 //     },
 //     {
 //       ballot: [
-//         { metricIdentifier: 'twitterAccountAge', voteShare: 60 },
+//         { metricIdentifier: 'twitterAge', voteShare: 60 },
 //         { metricIdentifier: 'gasFees', voteShare: 20 },
 //         { metricIdentifier: 'userEngagement', voteShare: 20 },
 //       ],
 //     },
 //     {
 //       ballot: [
-//         { metricIdentifier: 'twitterAccountAge', voteShare: 30 },
+//         { metricIdentifier: 'twitterAge', voteShare: 30 },
 //         { metricIdentifier: 'gasFees', voteShare: 60 },
 //         { metricIdentifier: 'userEngagement', voteShare: 10 },
 //       ],
 //     },
 //     {
 //       ballot: [
-//         { metricIdentifier: 'twitterAccountAge', voteShare: 20 },
+//         { metricIdentifier: 'twitterAge', voteShare: 20 },
 //         { metricIdentifier: 'gasFees', voteShare: 30 },
 //         { metricIdentifier: 'userEngagement', voteShare: 50 },
 //       ],
@@ -69,17 +70,6 @@ const getApprovedAlloApplicationIds = async (
   );
 };
 
-const isPoolFinalised = async (
-  alloPoolId: string,
-  chainId: number
-): Promise<boolean> => {
-  const roundDonations = await indexerClient.getRoundDonations({
-    chainId,
-    roundId: alloPoolId,
-  });
-  return roundDonations.donations.length > 0;
-};
-
 // TODO: Implement the gr8LucasMetricFetcher function to fetch metrics from the external endpoint
 const gr8LucasMetricFetcher = async (
   alloPoolId: string,
@@ -89,7 +79,7 @@ const gr8LucasMetricFetcher = async (
   return [
     {
       alloApplicationId: '0',
-      metricIdentifier: 'twitterAccountAge',
+      metricIdentifier: 'twitterAge',
       metricScore: 0.5,
     },
     { alloApplicationId: '0', metricIdentifier: 'gasFees', metricScore: 10 },
@@ -100,7 +90,7 @@ const gr8LucasMetricFetcher = async (
     },
     {
       alloApplicationId: '1',
-      metricIdentifier: 'twitterAccountAge',
+      metricIdentifier: 'twitterAge',
       metricScore: 2,
     },
     { alloApplicationId: '1', metricIdentifier: 'gasFees', metricScore: 30 },
@@ -111,7 +101,7 @@ const gr8LucasMetricFetcher = async (
     },
     {
       alloApplicationId: '2',
-      metricIdentifier: 'twitterAccountAge',
+      metricIdentifier: 'twitterAge',
       metricScore: 1,
     },
     { alloApplicationId: '2', metricIdentifier: 'gasFees', metricScore: 20 },
@@ -121,8 +111,8 @@ const gr8LucasMetricFetcher = async (
       metricScore: 0.7,
     },
     {
-      alloApplicationId: '2',
-      metricIdentifier: 'twitterAccountAge',
+      alloApplicationId: '3',
+      metricIdentifier: 'twitterAge',
       metricScore: 3,
     },
     { alloApplicationId: '3', metricIdentifier: 'gasFees', metricScore: 40 },
@@ -146,8 +136,10 @@ const fetchVotes = async (
 };
 
 // Function to determine if a metric is increasing or decreasing
-const isMetricIncreasing = (metricIdentifier: string): boolean => {
-  const metric = metricService.getEnabledMetricsByIdentifiers([
+const isMetricIncreasing = async (
+  metricIdentifier: string
+): Promise<boolean> => {
+  const metric = await metricService.getEnabledMetricsByIdentifiers([
     metricIdentifier,
   ]);
   if (metric === undefined) {
@@ -164,8 +156,7 @@ const normalizeScore = (
 ): number => {
   let normalizedScore = rawScore / maxValue;
   if (!isIncreasing) {
-    const POSITIVE_CONSTANT = 0.1;
-    normalizedScore = POSITIVE_CONSTANT + (1 - normalizedScore);
+    normalizedScore = +(1 - normalizedScore);
   }
   return normalizedScore;
 };
@@ -200,13 +191,13 @@ export const calculate = async (
   );
 
   // Fetch metrics from the external endpoint
-  const fetchedApplicaionMetricScores = await gr8LucasMetricFetcher(
+  const fetchedApplicationMetricScores = await gr8LucasMetricFetcher(
     alloPoolId,
     chainId
   );
 
   // Filter the applicationToMetricsScores array to only include approved applications
-  const applicationToMetricsScores = fetchedApplicaionMetricScores.filter(
+  const applicationToMetricsScores = fetchedApplicationMetricScores.filter(
     metric => approvedAlloApplicationIds.includes(metric.alloApplicationId)
   );
 
@@ -247,22 +238,22 @@ export const calculate = async (
     }
 
     const { maxValue } = metricBounds[metricIdentifier];
-    const isIncreasing = isMetricIncreasing(metricIdentifier);
+    const isIncreasing = await isMetricIncreasing(metricIdentifier);
     const normalizedScore = normalizeScore(rawScore, maxValue, isIncreasing);
-
     // Get vote share for the metric
     const totalVoteShare = votes.reduce((sum, vote) => {
       const ballotItem = vote.ballot?.find(
         item => item.metricIdentifier === metricIdentifier
       );
-      return ballotItem != null ? sum + ballotItem.voteShare : sum;
+
+      return ballotItem !== undefined ? sum + ballotItem.voteShare : sum;
     }, 0);
 
     // Weighted score for this metric
     const weightedScore = (normalizedScore * totalVoteShare) / 100;
 
     // Add to application's total score
-    if (appToWeightedScores[alloApplicationId] == null) {
+    if (appToWeightedScores[alloApplicationId] === undefined) {
       appToWeightedScores[alloApplicationId] = 0;
     }
     appToWeightedScores[alloApplicationId] += weightedScore;

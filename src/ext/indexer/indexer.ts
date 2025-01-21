@@ -5,14 +5,14 @@ import type {
   ApplicationRoundQueryResponse,
   ApplicationWithRound,
   ManagerRolesResponse,
-  RoundDonationsQueryResponse,
+  RoundDistributionsQueryResponse,
 } from './types';
 import request from 'graphql-request';
 import {
   getRoundWithApplications,
   getApplicationWithRound,
   getRoundManager,
-  getRoundDonations,
+  getRoundDistributions,
 } from './queries';
 import type { Logger } from 'winston';
 import { IsNullError } from '@/errors';
@@ -182,30 +182,30 @@ class IndexerClient {
     }
   }
 
-  async getRoundDonations({
+  async getRoundDistributions({
     chainId,
     roundId,
   }: {
     chainId: number;
     roundId: string;
-  }): Promise<RoundDonationsQueryResponse> {
-    const requestVariables = {
-      chainId,
-      roundId,
-    };
+  }): Promise<RoundDistributionsQueryResponse> {
+    const requestVariables = { chainId, roundId };
 
     try {
-      const response: RoundDonationsQueryResponse = await request(
+      const response: RoundDistributionsQueryResponse = await request(
         this.indexerEndpoint,
-        getRoundDonations,
+        getRoundDistributions,
         requestVariables
       );
 
       return response;
     } catch (error) {
-      this.logger.error(`Failed to fetch round donations: ${error.message}`, {
-        error,
-      });
+      this.logger.error(
+        `Failed to fetch round distributions: ${error.message}`,
+        {
+          error,
+        }
+      );
       throw error;
     }
   }

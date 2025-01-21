@@ -1,8 +1,18 @@
 import { type Request, type Response } from 'express';
 import voteService from '@/service/VoteService';
 import poolService from '@/service/PoolService';
-import { catchError, recoverSignerAddress, validateRequest } from '@/utils';
-import { BadRequestError, ServerError, UnauthorizedError } from '@/errors';
+import {
+  catchError,
+  isPoolFinalised,
+  recoverSignerAddress,
+  validateRequest,
+} from '@/utils';
+import {
+  ActionNotAllowedError,
+  BadRequestError,
+  ServerError,
+  UnauthorizedError,
+} from '@/errors';
 import { createLogger } from '@/logger';
 import { calculate } from '@/utils/calculate';
 import { type Pool } from '@/entity/Pool';
@@ -39,13 +49,14 @@ export const submitVote = async (
     typeof alloPoolId !== 'string' ||
     typeof chainId !== 'number' ||
     typeof signature !== 'string' ||
-    (Array.isArray(ballot) &&
-      ballot.every(
-        item =>
-          typeof item.metricIdentifier === 'string' &&
-          typeof item.voteShare === 'number'
-      ))
+    !Array.isArray(ballot) ||
+    !ballot.every(
+      item =>
+        typeof item.metricIdentifier === 'string' &&
+        typeof item.voteShare === 'number'
+    )
   ) {
+    res.status(400).json({ message: 'Invalid request data' });
     throw new BadRequestError('Invalid request data');
   }
 
@@ -70,6 +81,11 @@ export const submitVote = async (
   ) {
     res.status(401).json({ message: 'Not Authorzied' });
     throw new BadRequestError('Not Authorzied');
+  }
+
+  if (await isPoolFinalised(alloPoolId, chainId)) {
+    res.status(400).json({ message: 'Pool is finalised' });
+    throw new ActionNotAllowedError('Pool is finalised');
   }
 
   const [error] = await catchError(
@@ -135,14 +151,13 @@ export const predictDistribution = async (
     typeof alloPoolId !== 'string' ||
     typeof chainId !== 'number' ||
     !Array.isArray(ballot) ||
-    (Array.isArray(ballot) &&
-      ballot.every(
-        item =>
-          typeof item.metricName === 'string' &&
-          (item.metricId === undefined || typeof item.metricId === 'number') &&
-          typeof item.voteShare === 'number'
-      ))
+    !ballot.every(
+      item =>
+        typeof item.metricIdentifier === 'string' &&
+        typeof item.voteShare === 'number'
+    )
   ) {
+    res.status(400).json({ message: 'Invalid request data' });
     throw new BadRequestError('Invalid request data');
   }
 
@@ -154,7 +169,7 @@ export const predictDistribution = async (
     calculate(chainId, alloPoolId, unAccountedBallots)
   );
 
-  if (errorFetching !== null || distribution === undefined) {
+  if (errorFetching !== undefined || distribution === undefined) {
     logger.error(`Failed to calculate distribution: ${errorFetching?.message}`);
     res.status(500).json({
       message: 'Error calculating distribution',

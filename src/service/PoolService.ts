@@ -75,8 +75,10 @@ class PoolService {
     if (pool == null) {
       throw new NotFoundError('Pool not found');
     }
-
-    pool.distribution = distribution;
+    pool.distributionData = {
+      lastUpdated: new Date().toUTCString(),
+      distribution,
+    };
     return await this.savePool(pool);
   }
 }

@@ -3,7 +3,11 @@ import { gql } from 'graphql-request';
 export const getRoundManager = gql`
   query RoundManager($chainId: Int!, $alloPoolId: String!) {
     rounds(
-      filter: { chainId: { equalTo: $chainId }, id: { equalTo: $alloPoolId } }
+      filter: {
+        chainId: { equalTo: $chainId }
+        id: { equalTo: $alloPoolId }
+        strategyName: { equalTo: "allov2.EasyRetroFundingStrategy" }
+      }
     ) {
       roles {
         address
@@ -15,7 +19,11 @@ export const getRoundManager = gql`
 export const getRoundWithApplications = gql`
   query RoundApplications($chainId: Int!, $roundId: String!) {
     rounds(
-      filter: { chainId: { equalTo: $chainId }, id: { equalTo: $roundId } }
+      filter: {
+        chainId: { equalTo: $chainId }
+        id: { equalTo: $roundId }
+        strategyName: { equalTo: "allov2.EasyRetroFundingStrategy" }
+      }
     ) {
       chainId
       id
@@ -52,15 +60,22 @@ export const getApplicationWithRound = gql`
   }
 `;
 
-export const getRoundDonations = gql`
-  query RoundDonations($chainId: Int!, $roundId: String!) {
-    donations(
-      filter: { chainId: { equalTo: $chainId }, roundId: { equalTo: $roundId } }
+export const getRoundDistributions = gql`
+  query RoundDistributions($chainId: Int!, $roundId: String!) {
+    rounds(
+      filter: {
+        chainId: { equalTo: $chainId }
+        id: { equalTo: $roundId }
+        strategyName: { equalTo: "allov2.EasyRetroFundingStrategy" }
+      }
     ) {
-      id
-      applicationId
-      amount
-      tokenAddress
+      totalDistributed
+      applications(
+        filter: { distributionTransaction: { notEqualTo: "null" } }
+      ) {
+        id
+        distributionTransaction
+      }
     }
   }
 `;

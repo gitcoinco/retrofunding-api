@@ -78,3 +78,14 @@ export async function isPoolManager<T>(
     return false;
   }
 }
+
+export const isPoolFinalised = async (
+  alloPoolId: string,
+  chainId: number
+): Promise<boolean> => {
+  const roundDistributions = await indexerClient.getRoundDistributions({
+    chainId,
+    roundId: alloPoolId,
+  });
+  return roundDistributions.rounds.length > 0;
+};
