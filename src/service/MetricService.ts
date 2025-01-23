@@ -30,8 +30,8 @@ class MetricService {
     });
   }
 
-  async getMetricsByNames(names: string[]): Promise<Metric[]> {
-    return await metricRepository.find({ where: { name: In(names) } });
+  async getMetricsByNames(titles: string[]): Promise<Metric[]> {
+    return await metricRepository.find({ where: { title: In(titles) } });
   }
 
   async getMetricsByIdentifiers(identifiers: string[]): Promise<Metric[]> {

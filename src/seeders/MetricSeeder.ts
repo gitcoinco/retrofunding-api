@@ -10,19 +10,19 @@ export default class MetricSeeder extends Seeder {
     console.log('Database connection established.');
     const data: Array<Partial<Metric>> = [
       {
-        name: 'Txn Number',
+        title: 'Txn Number',
         description: 'Number of transactions made for project',
         orientation: MetricOrientation.Increase,
         enabled: true,
       },
       {
-        name: 'Age',
+        title: 'Age',
         description: 'Age of the project',
         orientation: MetricOrientation.Increase,
         enabled: true,
       },
       {
-        name: 'Twitter Followers',
+        title: 'Twitter Followers',
         description: 'Number of Twitter followers',
         orientation: MetricOrientation.Increase,
         enabled: false,

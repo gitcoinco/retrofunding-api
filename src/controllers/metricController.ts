@@ -12,7 +12,7 @@ const isMetric = (obj: any): obj is Metric => {
   return (
     typeof obj === 'object' &&
     typeof obj.identifier === 'string' &&
-    typeof obj.name === 'string' &&
+    typeof obj.title === 'string' &&
     typeof obj.description === 'string' &&
     (obj.orientation === MetricOrientation.Increase ||
       obj.orientation === MetricOrientation.Decrease) &&

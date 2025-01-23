@@ -16,7 +16,7 @@ export class Metric {
   identifier: string;
 
   @Column()
-  name: string;
+  title: string;
 
   @Column()
   description: string;
