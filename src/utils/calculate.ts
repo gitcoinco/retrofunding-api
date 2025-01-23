@@ -272,14 +272,14 @@ export const calculate = async (
         totalWeightedScore > 0 ? (weightedScore / totalWeightedScore) * 100 : 0;
       return {
         alloApplicationId,
-        distribution_percentage: distributionPercentage,
+        distributionPercentage,
       };
     }
   );
 
   // Sort by distribution percentage descending
   distributions.sort(
-    (a, b) => b.distribution_percentage - a.distribution_percentage
+    (a, b) => b.distributionPercentage - a.distributionPercentage
   );
 
   return distributions;

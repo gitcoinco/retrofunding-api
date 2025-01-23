@@ -137,7 +137,7 @@ router.put('/sync', syncPool);
  *                       alloApplicationId:
  *                         type: string
  *                         example: "1"
- *                       distribution_percentage:
+ *                       distributionPercentage:
  *                         type: number
  *                         example: 35.13513513513514
  *       400:

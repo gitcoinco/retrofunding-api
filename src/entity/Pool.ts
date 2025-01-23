@@ -18,7 +18,7 @@ export interface DistributionData {
 
 export interface Distribution {
   alloApplicationId: string;
-  distribution_percentage: number;
+  distributionPercentage: number;
 }
 
 @Entity()
