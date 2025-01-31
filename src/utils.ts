@@ -87,5 +87,5 @@ export const isPoolFinalised = async (
     chainId,
     roundId: alloPoolId,
   });
-  return roundDistributions.rounds.length > 0;
+  return Number(roundDistributions.rounds[0].totalDistributed) > 0;
 };
