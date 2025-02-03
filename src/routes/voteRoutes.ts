@@ -28,7 +28,7 @@ const router = Router();
  *               alloPoolId:
  *                 type: string
  *                 description: The ID of the pool (from Allo) to which the vote is submitted
- *                 example: "615"
+ *                 example: "673" # Example of poolId
  *               chainId:
  *                 type: number
  *                 description: The chain ID associated with the pool
@@ -85,7 +85,7 @@ router.post('/', submitVote);
  *               alloPoolId:
  *                 type: string
  *                 description: The ID of the pool to predict
- *                 example: "615"
+ *                 example: "673" # Example of poolId
  *               chainId:
  *                 type: number
  *                 description: The chain ID associated with the pool
@@ -115,7 +115,26 @@ router.post('/', submitVote);
  *               - ballot
  *     responses:
  *       200:
- *         description: Distribution predicted successfully
+ *         description: Distribution prediction successful
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 message:
+ *                   type: string
+ *                   example: "Distribution updated successfully"
+ *                 data:
+ *                   type: array
+ *                   items:
+ *                     type: object
+ *                     properties:
+ *                       alloApplicationId:
+ *                         type: string
+ *                         example: "1"
+ *                       distributionPercentage:
+ *                         type: number
+ *                         example: 35.13513513513514
  *       400:
  *         description: Invalid poolId or chainId format
  *       500:

@@ -1,4 +1,4 @@
-import { Entity, PrimaryGeneratedColumn, Column, Unique } from 'typeorm';
+import { Entity, PrimaryGeneratedColumn, Column, Index } from 'typeorm';
 
 export enum EligibilityType {
   Linear = 'linear',
@@ -6,7 +6,7 @@ export enum EligibilityType {
 }
 
 @Entity()
-@Unique(['chainId', 'alloPoolId'])
+@Index(['chainId', 'alloPoolId'], { unique: true })
 export class EligibilityCriteria {
   @PrimaryGeneratedColumn()
   id: number;

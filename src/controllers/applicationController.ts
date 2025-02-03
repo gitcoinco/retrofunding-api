@@ -61,10 +61,10 @@ export const createApplication = async (
   // Create application
   const [error, application] = await catchError(
     applicationService.createApplication({
+      alloPoolId,
       chainId,
       alloApplicationId,
       pool,
-      poolId: pool.id,
     })
   );
 

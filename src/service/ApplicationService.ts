@@ -81,9 +81,9 @@ class ApplicationService {
           // Instantiate a new Application entity
           const application = new Application();
           application.chainId = chainId;
+          application.alloPoolId = pool.alloPoolId;
           application.alloApplicationId = alloApplicationId;
           application.pool = pool;
-          application.poolId = pool.id;
 
           // Return the new Application entity
           return application;

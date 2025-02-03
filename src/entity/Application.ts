@@ -3,12 +3,12 @@ import {
   Column,
   Entity,
   ManyToOne,
-  Unique,
+  Index,
 } from 'typeorm';
 import { Pool } from '@/entity/Pool';
 
 @Entity()
-@Unique(['alloApplicationId', 'poolId'])
+@Index(['alloPoolId', 'chainId', 'alloApplicationId'], { unique: true })
 export class Application {
   @PrimaryGeneratedColumn()
   id: number;
@@ -17,13 +17,13 @@ export class Application {
   chainId: number;
 
   @Column()
+  alloPoolId: string;
+
+  @Column()
   alloApplicationId: string;
 
   @ManyToOne(() => Pool, pool => pool.applications, {
     onDelete: 'CASCADE',
   })
   pool: Pool;
-
-  @Column() // Explicitly define the foreign key column for pool
-  poolId: number;
 }
