@@ -3,9 +3,9 @@ import {
   Column,
   Entity,
   OneToMany,
-  Unique,
   OneToOne,
   JoinColumn,
+  Index,
 } from 'typeorm';
 import { Application } from '@/entity/Application';
 import { EligibilityCriteria } from './EligibilityCriteria';
@@ -22,7 +22,7 @@ export interface Distribution {
 }
 
 @Entity()
-@Unique(['chainId', 'alloPoolId'])
+@Index(['chainId', 'alloPoolId'], { unique: true })
 export class Pool {
   @PrimaryGeneratedColumn()
   id: number;
@@ -47,5 +47,8 @@ export class Pool {
   votes: Vote[];
 
   @Column('simple-json', { nullable: true })
-  distributionData: DistributionData;
+  distributionData: DistributionData | null;
+
+  @Column('simple-json', { nullable: true })
+  customDistributionData: DistributionData | null;
 }

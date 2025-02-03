@@ -1,9 +1,11 @@
 import {
   Column,
   Entity,
+  Index,
   ManyToOne,
   PrimaryGeneratedColumn,
   Unique,
+  UpdateDateColumn,
 } from 'typeorm';
 import { Pool } from './Pool';
 
@@ -14,6 +16,7 @@ export interface Ballot {
 
 @Entity()
 @Unique(['poolId', 'voter'])
+@Index(['alloPoolId', 'chainId', 'voter'], { unique: true })
 export class Vote {
   @PrimaryGeneratedColumn()
   id: number;
@@ -35,4 +38,7 @@ export class Vote {
 
   @Column() // Explicitly define the foreign key column for pool
   poolId: number;
+
+  @UpdateDateColumn()
+  updatedAt: Date;
 }

@@ -1,7 +1,12 @@
 import type { Request, Response } from 'express';
 import poolService from '@/service/PoolService';
 import applicationService from '@/service/ApplicationService';
-import { catchError, validateRequest } from '@/utils';
+import {
+  catchError,
+  isPoolFinalised,
+  isPoolManager,
+  validateRequest,
+} from '@/utils';
 import { createLogger } from '@/logger';
 import {
   indexerClient,
@@ -9,6 +14,7 @@ import {
 } from '@/ext/indexer';
 
 import {
+  ActionNotAllowedError,
   BadRequestError,
   IsNullError,
   NotFoundError,
@@ -18,6 +24,8 @@ import { EligibilityType } from '@/entity/EligibilityCriteria';
 import { calculate } from '@/utils/calculate';
 import eligibilityCriteriaService from '@/service/EligibilityCriteriaService';
 import { type PoolIdChainId } from './types';
+import { type Distribution } from '@/entity/Pool';
+import { type Hex } from 'viem';
 
 const logger = createLogger();
 
@@ -30,6 +38,12 @@ interface CreatePoolRequest extends PoolIdChainId {
 interface EligibilityCriteriaRequest extends PoolIdChainId {
   eligibilityType: EligibilityType;
   data: object;
+}
+
+interface SetCustomDistributionRequest extends PoolIdChainId {
+  signature: Hex;
+  sender: Hex;
+  distribution: Distribution[];
 }
 
 /**
@@ -236,4 +250,76 @@ export const updateEligibilityCriteria = async (req, res): Promise<void> => {
   res.status(200).json({
     message: 'Eligibility criteria updated successfully',
   });
+};
+
+export const setCustomDistribution = async (req, res): Promise<void> => {
+  const { alloPoolId, chainId, distribution, signature } =
+    req.body as SetCustomDistributionRequest;
+
+  if (
+    !(await isPoolManager(
+      { alloPoolId, chainId },
+      signature,
+      chainId,
+      alloPoolId
+    ))
+  ) {
+    res.status(401).json({ message: 'Not Authorzied' });
+    throw new BadRequestError('Not Authorzied');
+  }
+
+  if (await isPoolFinalised(alloPoolId, chainId)) {
+    res.status(400).json({ message: 'Pool is finalised' });
+    throw new ActionNotAllowedError('Pool is finalised');
+  }
+
+  const [error] = await catchError(
+    poolService.updateCustomDistribution(alloPoolId, chainId, distribution)
+  );
+
+  if (error !== undefined) {
+    res.status(500).json({
+      message: 'Error setting custom distribution',
+      error: error?.message,
+    });
+    throw new ServerError(`Error setting custom distribution`);
+  }
+
+  res.status(201).json({ message: 'Custom distribution set successfully' });
+};
+
+export const deleteCustomDistribution = async (req, res): Promise<void> => {
+  const { alloPoolId, chainId, signature } =
+    req.body as SetCustomDistributionRequest;
+
+  if (
+    !(await isPoolManager(
+      { alloPoolId, chainId },
+      signature,
+      chainId,
+      alloPoolId
+    ))
+  ) {
+    res.status(401).json({ message: 'Not Authorzied' });
+    throw new BadRequestError('Not Authorzied');
+  }
+
+  if (await isPoolFinalised(alloPoolId, chainId)) {
+    res.status(400).json({ message: 'Pool is finalised' });
+    throw new ActionNotAllowedError('Pool is finalised');
+  }
+
+  const [error] = await catchError(
+    poolService.deleteCustomDistribution(alloPoolId, chainId)
+  );
+
+  if (error !== undefined) {
+    res.status(500).json({
+      message: 'Error deleting custom distribution',
+      error: error?.message,
+    });
+    throw new ServerError(`Error deleting custom distribution`);
+  }
+
+  res.status(200).json({ message: 'Custom distribution deleted successfully' });
 };

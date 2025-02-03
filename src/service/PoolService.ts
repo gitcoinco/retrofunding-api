@@ -81,6 +81,34 @@ class PoolService {
     };
     return await this.savePool(pool);
   }
+
+  async updateCustomDistribution(
+    alloPoolId: string,
+    chainId: number,
+    distribution: Distribution[]
+  ): Promise<Pool> {
+    const pool = await this.getPoolByChainIdAndAlloPoolId(chainId, alloPoolId);
+    if (pool == null) {
+      throw new NotFoundError('Pool not found');
+    }
+    pool.customDistributionData = {
+      lastUpdated: new Date().toUTCString(),
+      distribution,
+    };
+    return await this.savePool(pool);
+  }
+
+  async deleteCustomDistribution(
+    alloPoolId: string,
+    chainId: number
+  ): Promise<void> {
+    const pool = await this.getPoolByChainIdAndAlloPoolId(chainId, alloPoolId);
+    if (pool == null) {
+      throw new NotFoundError('Pool not found');
+    }
+    pool.customDistributionData = null;
+    await this.savePool(pool);
+  }
 }
 
 const poolService = new PoolService();
