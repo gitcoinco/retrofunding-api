@@ -1,7 +1,7 @@
 import { createLogger } from '@/logger';
 import { type Request, type Response } from 'express';
 import { validationResult } from 'express-validator';
-import deterministicHash from 'deterministic-object-hash';
+import stringify from 'json-stringify-deterministic';
 import { type Hex, keccak256, recoverMessageAddress, toHex } from 'viem';
 import { indexerClient } from './ext/indexer';
 import { env } from './env';
@@ -39,7 +39,7 @@ export const addressFrom = (index: number): string => {
 };
 
 async function deterministicKeccakHash<T>(obj: T): Promise<Hex> {
-  const hash = await deterministicHash(obj);
+  const hash = stringify(obj);
   return keccak256(toHex(hash));
 }
 
