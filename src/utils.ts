@@ -2,7 +2,7 @@ import { createLogger } from '@/logger';
 import { type Request, type Response } from 'express';
 import { validationResult } from 'express-validator';
 import deterministicHash from 'deterministic-object-hash';
-import { type Hex, keccak256, recoverAddress, toHex } from 'viem';
+import { type Hex, keccak256, recoverMessageAddress, toHex } from 'viem';
 import { indexerClient } from './ext/indexer';
 import { env } from './env';
 
@@ -47,8 +47,8 @@ export async function recoverSignerAddress<T>(
   obj: T,
   signature: Hex
 ): Promise<Hex> {
-  return await recoverAddress({
-    hash: await deterministicKeccakHash(obj),
+  return await recoverMessageAddress({
+    message: await deterministicKeccakHash(obj),
     signature,
   });
 }
