@@ -71,14 +71,11 @@ export const submitVote = async (
     throw new BadRequestError('Pool not found');
   }
 
-  if (
-    !(await checkVoterEligibility(
-      { alloPoolId, chainId },
-      signature,
-      pool,
-      voter
-    ))
-  ) {
+  const [isVoterEligibleError, isVoterEligible] = await catchError(
+    checkVoterEligibility({ alloPoolId, chainId }, signature, pool, voter)
+  );
+
+  if (isVoterEligibleError !== undefined || isVoterEligible === false) {
     res.status(401).json({ message: 'Not Authorzied' });
     throw new BadRequestError('Not Authorzied');
   }
