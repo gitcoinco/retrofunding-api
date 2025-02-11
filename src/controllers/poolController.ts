@@ -36,13 +36,13 @@ interface CreatePoolRequest extends PoolIdChainId {
 }
 
 interface EligibilityCriteriaRequest extends PoolIdChainId {
+  signature: Hex;
   eligibilityType: EligibilityType;
   data: object;
 }
 
 interface SetCustomDistributionRequest extends PoolIdChainId {
   signature: Hex;
-  sender: Hex;
   distribution: Distribution[];
 }
 
@@ -222,13 +222,25 @@ export const calculateDistribution = async (req, res): Promise<void> => {
 };
 
 export const updateEligibilityCriteria = async (req, res): Promise<void> => {
-  const { eligibilityType, alloPoolId, chainId, data } =
+  const { signature, eligibilityType, alloPoolId, chainId, data } =
     req.body as EligibilityCriteriaRequest;
 
   // Log the receipt of the update request
   logger.info(
     `Received update eligibility criteria request for chainId: ${chainId}, alloPoolId: ${alloPoolId}`
   );
+
+  if (
+    !(await isPoolManager(
+      { alloPoolId, chainId },
+      signature,
+      chainId,
+      alloPoolId
+    ))
+  ) {
+    res.status(401).json({ message: 'Not Authorzied' });
+    throw new BadRequestError('Not Authorzied');
+  }
 
   const [error] = await catchError(
     eligibilityCriteriaService.saveEligibilityCriteria({
