@@ -163,6 +163,10 @@ router.post('/calculate', calculateDistribution);
  *           schema:
  *             type: object
  *             properties:
+ *               signature:
+ *                 type: string
+ *                 description: Signature of the sender which should be the manager of the pool
+ *                 example: "0xdeadbeef"
  *               alloPoolId:
  *                 type: string
  *                 description: The ID of the pool
