@@ -7,7 +7,7 @@ import poolService from '@/service/PoolService';
 import voteService from '@/service/VoteService';
 import { isPoolFinalised } from '@/utils';
 import { getApplicationMetrics } from '@/utils/applications';
-import { type MetricBounds, type MetricFetcherResponse } from '@/utils/types';
+import { type PreparedCalculationData } from '@/utils/types';
 const getApprovedAlloApplicationIds = async (
   alloPoolId: string,
   chainId: number
@@ -82,16 +82,6 @@ export const calculate = async (
 
   return distributions;
 };
-
-// Define new types
-interface PreparedCalculationData {
-  pool: {
-    metricIdentifiers: string[];
-  };
-  isIncreasingMap: Record<string, boolean>;
-  applicationToMetricsScores: MetricFetcherResponse[];
-  metricsBounds: MetricBounds;
-}
 
 // New preparation function with explicit return type
 export const prepareCalculationData = async (
