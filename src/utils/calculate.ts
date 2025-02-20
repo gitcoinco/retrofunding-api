@@ -6,54 +6,8 @@ import metricService from '@/service/MetricService';
 import poolService from '@/service/PoolService';
 import voteService from '@/service/VoteService';
 import { isPoolFinalised } from '@/utils';
-
-interface MetricFetcherResponse {
-  alloApplicationId: string;
-  metricIdentifier: string;
-  metricScore: number;
-}
-
-// Hardcoded votes for testing purposes
-// const getHardcodedVotes = (): Array<Partial<Vote>> => {
-//   return [
-//     {
-//       ballot: [
-//         { metricIdentifier: 'twitterAge', voteShare: 50 },
-//         { metricIdentifier: 'gasFees', voteShare: 30 },
-//         { metricIdentifier: 'userEngagement', voteShare: 20 },
-//       ],
-//     },
-//     {
-//       ballot: [
-//         { metricIdentifier: 'twitterAge', voteShare: 40 },
-//         { metricIdentifier: 'gasFees', voteShare: 50 },
-//         { metricIdentifier: 'userEngagement', voteShare: 10 },
-//       ],
-//     },
-//     {
-//       ballot: [
-//         { metricIdentifier: 'twitterAge', voteShare: 60 },
-//         { metricIdentifier: 'gasFees', voteShare: 20 },
-//         { metricIdentifier: 'userEngagement', voteShare: 20 },
-//       ],
-//     },
-//     {
-//       ballot: [
-//         { metricIdentifier: 'twitterAge', voteShare: 30 },
-//         { metricIdentifier: 'gasFees', voteShare: 60 },
-//         { metricIdentifier: 'userEngagement', voteShare: 10 },
-//       ],
-//     },
-//     {
-//       ballot: [
-//         { metricIdentifier: 'twitterAge', voteShare: 20 },
-//         { metricIdentifier: 'gasFees', voteShare: 30 },
-//         { metricIdentifier: 'userEngagement', voteShare: 50 },
-//       ],
-//     },
-//   ];
-// };
-
+import { getApplicationMetrics } from '@/utils/applications';
+import { type MetricBounds, type MetricFetcherResponse } from '@/utils/types';
 const getApprovedAlloApplicationIds = async (
   alloPoolId: string,
   chainId: number
@@ -68,60 +22,6 @@ const getApprovedAlloApplicationIds = async (
       .filter(application => application.status === Status.APPROVED)
       .map(application => application.id) ?? []
   );
-};
-
-// TODO: Implement the gr8LucasMetricFetcher function to fetch metrics from the external endpoint
-const gr8LucasMetricFetcher = async (
-  alloPoolId: string,
-  chainId: number
-): Promise<MetricFetcherResponse[]> => {
-  // Hardcoded object for now
-  return [
-    {
-      alloApplicationId: '0',
-      metricIdentifier: 'twitterAge',
-      metricScore: 0.5,
-    },
-    { alloApplicationId: '0', metricIdentifier: 'gasFees', metricScore: 10 },
-    {
-      alloApplicationId: '0',
-      metricIdentifier: 'userEngagement',
-      metricScore: 0.6,
-    },
-    {
-      alloApplicationId: '1',
-      metricIdentifier: 'twitterAge',
-      metricScore: 2,
-    },
-    { alloApplicationId: '1', metricIdentifier: 'gasFees', metricScore: 30 },
-    {
-      alloApplicationId: '1',
-      metricIdentifier: 'userEngagement',
-      metricScore: 0.5,
-    },
-    {
-      alloApplicationId: '2',
-      metricIdentifier: 'twitterAge',
-      metricScore: 1,
-    },
-    { alloApplicationId: '2', metricIdentifier: 'gasFees', metricScore: 20 },
-    {
-      alloApplicationId: '2',
-      metricIdentifier: 'userEngagement',
-      metricScore: 0.7,
-    },
-    {
-      alloApplicationId: '3',
-      metricIdentifier: 'twitterAge',
-      metricScore: 3,
-    },
-    { alloApplicationId: '3', metricIdentifier: 'gasFees', metricScore: 40 },
-    {
-      alloApplicationId: '3',
-      metricIdentifier: 'userEngagement',
-      metricScore: 0.4,
-    },
-  ];
 };
 
 const fetchVotes = async (
@@ -166,13 +66,7 @@ export const calculate = async (
   alloPoolId: string,
   unAccountedBallots?: Partial<Vote>
 ): Promise<Distribution[]> => {
-  const pool = await poolService.getPoolByChainIdAndAlloPoolId(
-    chainId,
-    alloPoolId
-  );
-  if (pool == null) {
-    throw new NotFoundError(`Pool not found`);
-  }
+  const preparedData = await prepareCalculationData(chainId, alloPoolId);
 
   // Fetch votes using the hardcoded function
   const votes = await fetchVotes(chainId, alloPoolId);
@@ -184,51 +78,79 @@ export const calculate = async (
     throw new ActionNotAllowedError('Pool is finalised');
   }
 
-  // Fetch approved allo application ids
+  const distributions = await calculateDistribution(preparedData, votes);
+
+  return distributions;
+};
+
+// Define new types
+interface PreparedCalculationData {
+  pool: {
+    metricIdentifiers: string[];
+  };
+  isIncreasingMap: Record<string, boolean>;
+  applicationToMetricsScores: MetricFetcherResponse[];
+  metricsBounds: MetricBounds;
+}
+
+// New preparation function with explicit return type
+export const prepareCalculationData = async (
+  chainId: number,
+  alloPoolId: string
+): Promise<PreparedCalculationData> => {
+  const pool = await poolService.getPoolByChainIdAndAlloPoolId(
+    chainId,
+    alloPoolId
+  );
+  if (pool == null) {
+    throw new NotFoundError(`Pool not found`);
+  }
+
+  const isIncreasingMap: Record<string, boolean> = {};
+  for (const metricIdentifier of pool.metricIdentifiers) {
+    isIncreasingMap[metricIdentifier] =
+      await isMetricIncreasing(metricIdentifier);
+  }
+
   const approvedAlloApplicationIds = await getApprovedAlloApplicationIds(
     alloPoolId,
     chainId
   );
 
-  // Fetch metrics from the external endpoint
-  const fetchedApplicationMetricScores = await gr8LucasMetricFetcher(
+  const { applicationMetrics, metricsBounds } = await getApplicationMetrics(
+    approvedAlloApplicationIds,
     alloPoolId,
-    chainId
+    pool.metricIdentifiers.map(metricIdentifier => ({
+      identifier: metricIdentifier,
+      isIncreasing: isIncreasingMap[metricIdentifier],
+    }))
   );
 
-  // Filter the applicationToMetricsScores array to only include approved applications
-  const applicationToMetricsScores = fetchedApplicationMetricScores.filter(
-    metric => approvedAlloApplicationIds.includes(metric.alloApplicationId)
-  );
+  return {
+    pool: {
+      metricIdentifiers: pool.metricIdentifiers,
+    },
+    isIncreasingMap,
+    applicationToMetricsScores: applicationMetrics,
+    metricsBounds,
+  };
+};
 
-  // Precompute min and max values for each metric
-  const metricBounds: Record<string, { minValue: number; maxValue: number }> =
-    {};
-  applicationToMetricsScores.forEach(({ metricIdentifier, metricScore }) => {
-    if (metricBounds[metricIdentifier] == null) {
-      metricBounds[metricIdentifier] = {
-        minValue: metricScore,
-        maxValue: metricScore,
-      };
-    } else {
-      metricBounds[metricIdentifier].minValue = Math.min(
-        metricBounds[metricIdentifier].minValue,
-        metricScore
-      );
-      metricBounds[metricIdentifier].maxValue = Math.max(
-        metricBounds[metricIdentifier].maxValue,
-        metricScore
-      );
-    }
-  });
+// New calculation function with explicit parameter types
+export const calculateDistribution = async (
+  preparedData: PreparedCalculationData,
+  votes: Array<Partial<Vote>>
+): Promise<Distribution[]> => {
+  const { pool, isIncreasingMap, applicationToMetricsScores, metricsBounds } =
+    preparedData;
 
-  // Normalize and calculate weighted scores
   const appToWeightedScores: Record<string, number> = {};
 
   for (const metricScore of applicationToMetricsScores) {
     const {
       alloApplicationId,
       metricIdentifier,
+      // TODO: Check how we could handle wrong application metric scores. Check also ./applications.ts in function getApplicationMetrics
       metricScore: rawScore,
     } = metricScore;
 
@@ -237,8 +159,8 @@ export const calculate = async (
       throw new NotFoundError(`Metric "${metricIdentifier}" not found in pool`);
     }
 
-    const { maxValue } = metricBounds[metricIdentifier];
-    const isIncreasing = await isMetricIncreasing(metricIdentifier);
+    const { maxValue } = metricsBounds[metricIdentifier];
+    const isIncreasing = isIncreasingMap[metricIdentifier] as boolean;
     const normalizedScore = normalizeScore(rawScore, maxValue, isIncreasing);
     // Get vote share for the metric
     const totalVoteShare = votes.reduce((sum, vote) => {
