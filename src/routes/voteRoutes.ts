@@ -1,5 +1,9 @@
 import { Router } from 'express';
-import { submitVote, predictDistribution } from '@/controllers/voteController';
+import {
+  submitVote,
+  predictDistribution,
+  getCalculationData,
+} from '@/controllers/voteController';
 
 const router = Router();
 
@@ -141,5 +145,106 @@ router.post('/', submitVote);
  *         description: Internal server error
  */
 router.post('/predict', predictDistribution);
+
+/**
+ * @swagger
+ * /vote/getCalculationData:
+ *   post:
+ *     tags:
+ *       - vote
+ *     summary: Get calculation data for vote distribution
+ *     description: |
+ *       Retrieves essential data required for vote distribution calculations,
+ *       including metric identifiers, score mappings, and bounds.
+ *     requestBody:
+ *       required: true
+ *       content:
+ *         application/json:
+ *           schema:
+ *             type: object
+ *             properties:
+ *               alloPoolId:
+ *                 type: string
+ *                 description: The unique identifier of the funding pool
+ *                 example: "673"
+ *               chainId:
+ *                 type: number
+ *                 description: The blockchain network ID where the pool is deployed
+ *                 example: 11155111
+ *             required:
+ *               - alloPoolId
+ *               - chainId
+ *     responses:
+ *       200:
+ *         description: Successfully retrieved calculation data
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 pool:
+ *                   type: object
+ *                   properties:
+ *                     metricIdentifiers:
+ *                       type: array
+ *                       items:
+ *                         type: string
+ *                       example: ["metric1", "metric2", "metric3"]
+ *                 isIncreasingMap:
+ *                   type: object
+ *                   properties:
+ *                     metric1:
+ *                       type: boolean
+ *                     metric2:
+ *                       type: boolean
+ *                     metric3:
+ *                       type: boolean
+ *                 applicationToMetricsScores:
+ *                   type: array
+ *                   items:
+ *                     type: object
+ *                     properties:
+ *                       alloApplicationId:
+ *                         type: string
+ *                         example: "1"
+ *                       metricIdentifier:
+ *                         type: string
+ *                         enum: ["metric1", "metric2", "metric3"]
+ *                         example: "metric1"
+ *                       metricScore:
+ *                         type: number
+ *                         example: 100
+ *                 metricsBounds:
+ *                   type: object
+ *                   properties:
+ *                     metric1:
+ *                       type: object
+ *                       properties:
+ *                         minValue:
+ *                           type: number
+ *                         maxValue:
+ *                           type: number
+ *                     metric2:
+ *                       type: object
+ *                       properties:
+ *                         minValue:
+ *                           type: number
+ *                         maxValue:
+ *                           type: number
+ *                     metric3:
+ *                       type: object
+ *                       properties:
+ *                         minValue:
+ *                           type: number
+ *                         maxValue:
+ *                           type: number
+ *       400:
+ *         description: Invalid request parameters
+ *       404:
+ *         description: Pool not found
+ *       500:
+ *         description: Internal server error while fetching calculation data
+ */
+router.post('/getCalculationData', getCalculationData);
 
 export default router;

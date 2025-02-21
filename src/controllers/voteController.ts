@@ -14,13 +14,13 @@ import {
   UnauthorizedError,
 } from '@/errors';
 import { createLogger } from '@/logger';
-import { calculate } from '@/utils/calculate';
+import { calculate, prepareCalculationData } from '@/utils/calculate';
 import { type Pool } from '@/entity/Pool';
 import { type Ballot, type Vote } from '@/entity/Vote';
 import eligibilityCriteriaService from '@/service/EligibilityCriteriaService';
 import { type Hex } from 'viem';
 import { env } from 'process';
-import { type PoolIdChainId } from './types';
+import { type PoolIdChainId } from '@/controllers/types';
 const logger = createLogger();
 
 interface SubmitVoteRequest extends PoolIdChainId {
@@ -177,4 +177,28 @@ export const predictDistribution = async (
 
   logger.info('Distribution predicted successfully', distribution);
   res.status(200).json(distribution);
+};
+
+export const getCalculationData = async (
+  req: Request,
+  res: Response
+): Promise<void> => {
+  const { alloPoolId, chainId } = req.body as {
+    alloPoolId: string;
+    chainId: number;
+  };
+
+  const [error, preparedData] = await catchError(
+    prepareCalculationData(chainId, alloPoolId)
+  );
+
+  if (error !== undefined || preparedData === undefined) {
+    res.status(500).json({
+      message: 'Error fetching calculation data',
+      error: error?.message,
+    });
+    throw new ServerError(`Error fetching calculation data`);
+  }
+  logger.info('Calculation data fetched successfully', preparedData);
+  res.status(200).json(preparedData);
 };
