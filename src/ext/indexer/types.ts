@@ -99,7 +99,7 @@ export interface ApplicationRoundQueryResponse {
 
 export interface ManagerRolesResponse {
   rounds: Array<{
-    roles: Array<{
+    roundRoles: Array<{
       address: string;
     }>;
   }>;
