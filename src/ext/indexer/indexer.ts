@@ -80,7 +80,7 @@ class IndexerClient {
 
       const round = response.rounds[0];
 
-      if (round.roles.length === 0) {
+      if (round.roundRoles.length === 0) {
         this.logger.warn(
           `No manager found for poolId: ${alloPoolId} on chainId: ${chainId}`
         );
@@ -88,7 +88,7 @@ class IndexerClient {
       }
 
       this.logger.info(`Successfully fetched round manager`);
-      return round.roles.map(role => role.address);
+      return round.roundRoles.map(role => role.address);
     } catch (error) {
       this.logger.error(`Failed to fetch round manager: ${error.message}`, {
         error,
@@ -164,7 +164,7 @@ class IndexerClient {
         requestVariables
       );
 
-      const application = response.application;
+      const application = response.applications[0];
 
       if (application == null) {
         this.logger.warn(
@@ -172,7 +172,7 @@ class IndexerClient {
         );
         return null;
       }
-      return response.application;
+      return application;
     } catch (error) {
       this.logger.error(
         `Failed to fetch round with single application: ${error.message}`,

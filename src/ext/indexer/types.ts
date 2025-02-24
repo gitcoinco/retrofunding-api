@@ -94,12 +94,12 @@ export interface ApplicationWithRound {
 }
 
 export interface ApplicationRoundQueryResponse {
-  application: ApplicationWithRound;
+  applications: ApplicationWithRound[];
 }
 
 export interface ManagerRolesResponse {
   rounds: Array<{
-    roles: Array<{
+    roundRoles: Array<{
       address: string;
     }>;
   }>;
