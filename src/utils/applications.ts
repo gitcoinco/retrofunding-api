@@ -16,6 +16,20 @@ export const applicationsIdToMetricsRegistryId = {
   '5': 'WQZJlExc3O96r6BsnIIUKYRDxhqjta4keHGpWT3k5b0=',
   '6': '4juDfq8eT1mY8Mmg2p11BG4MlKIqxxFPVCj9bsvR6Ss=',
   '7': 'WQZJlExc3O96r6BsnIIUKYRDxhqjta4keHGpWT3k5b0=',
+  '8': '4juDfq8eT1mY8Mmg2p11BG4MlKIqxxFPVCj9bsvR6Ss=',
+  '9': 'WQZJlExc3O96r6BsnIIUKYRDxhqjta4keHGpWT3k5b0=',
+  '10': '4juDfq8eT1mY8Mmg2p11BG4MlKIqxxFPVCj9bsvR6Ss=',
+  '11': 'WQZJlExc3O96r6BsnIIUKYRDxhqjta4keHGpWT3k5b0=',
+  '12': '4juDfq8eT1mY8Mmg2p11BG4MlKIqxxFPVCj9bsvR6Ss=',
+  '13': 'WQZJlExc3O96r6BsnIIUKYRDxhqjta4keHGpWT3k5b0=',
+  '14': '4juDfq8eT1mY8Mmg2p11BG4MlKIqxxFPVCj9bsvR6Ss=',
+  '15': 'WQZJlExc3O96r6BsnIIUKYRDxhqjta4keHGpWT3k5b0=',
+  '16': '4juDfq8eT1mY8Mmg2p11BG4MlKIqxxFPVCj9bsvR6Ss=',
+  '17': 'WQZJlExc3O96r6BsnIIUKYRDxhqjta4keHGpWT3k5b0=',
+  '18': '4juDfq8eT1mY8Mmg2p11BG4MlKIqxxFPVCj9bsvR6Ss=',
+  '19': 'WQZJlExc3O96r6BsnIIUKYRDxhqjta4keHGpWT3k5b0=',
+  '20': '4juDfq8eT1mY8Mmg2p11BG4MlKIqxxFPVCj9bsvR6Ss=',
+  '21': 'WQZJlExc3O96r6BsnIIUKYRDxhqjta4keHGpWT3k5b0=',
 };
 
 const hardcodedRoundId = '9921615e-7edd-4569-9b3f-785dcc3aac5e';
