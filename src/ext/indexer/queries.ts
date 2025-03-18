@@ -3,13 +3,13 @@ import { gql } from 'graphql-request';
 export const getRoundManager = gql`
   query RoundManager($chainId: Int!, $alloPoolId: String!) {
     rounds(
-      filter: {
-        chainId: { equalTo: $chainId }
-        id: { equalTo: $alloPoolId }
-        strategyName: { equalTo: "allov2.EasyRetroFundingStrategy" }
+      where: {
+        chainId: { _eq: $chainId }
+        id: { _eq: $alloPoolId }
+        strategyName: { _eq: "allov2.EasyRetroFundingStrategy" }
       }
     ) {
-      roles {
+      roundRoles {
         address
       }
     }
@@ -19,10 +19,10 @@ export const getRoundManager = gql`
 export const getRoundWithApplications = gql`
   query RoundApplications($chainId: Int!, $roundId: String!) {
     rounds(
-      filter: {
-        chainId: { equalTo: $chainId }
-        id: { equalTo: $roundId }
-        strategyName: { equalTo: "allov2.EasyRetroFundingStrategy" }
+      where: {
+        chainId: { _eq: $chainId }
+        id: { _eq: $roundId }
+        strategyName: { _eq: "allov2.EasyRetroFundingStrategy" }
       }
     ) {
       chainId
@@ -35,7 +35,7 @@ export const getRoundWithApplications = gql`
         metadataCid
         status
         projectId
-        project: canonicalProject {
+        projects(where: { projectType: { _eq: "canonical" } }) {
           metadata
           metadataCid
         }
@@ -50,7 +50,13 @@ export const getApplicationWithRound = gql`
     $roundId: String!
     $applicationId: String!
   ) {
-    application(chainId: $chainId, roundId: $roundId, id: $applicationId) {
+    applications(
+      where: {
+        chainId: { _eq: $chainId }
+        roundId: { _eq: $roundId }
+        id: { _eq: $applicationId }
+      }
+    ) {
       metadata
       metadataCid
       round {
@@ -63,16 +69,14 @@ export const getApplicationWithRound = gql`
 export const getRoundDistributions = gql`
   query RoundDistributions($chainId: Int!, $roundId: String!) {
     rounds(
-      filter: {
-        chainId: { equalTo: $chainId }
-        id: { equalTo: $roundId }
-        strategyName: { equalTo: "allov2.EasyRetroFundingStrategy" }
+      where: {
+        chainId: { _eq: $chainId }
+        id: { _eq: $roundId }
+        strategyName: { _eq: "allov2.EasyRetroFundingStrategy" }
       }
     ) {
       totalDistributed
-      applications(
-        filter: { distributionTransaction: { notEqualTo: "null" } }
-      ) {
+      applications(where: { distributionTransaction: { _isNull: false } }) {
         id
         distributionTransaction
       }
