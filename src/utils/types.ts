@@ -28,6 +28,14 @@ export interface ProjectMetricsSnapshot {
     timeToMergeDaysAverage6Months: number;
     fulltimeDeveloperAverage6Months: number;
     timeToFirstResponseDaysAverage6Months: number;
+    gmv_growth: number;
+    unique_donor_growth: number;
+    donor_retention_rate: number;
+    developer_retention_rate: number;
+    scaling_community_rounds: number;
+    current_active_developers: number;
+    network_contribution_score: number;
+    contributor_onboarding_rate: number;
   };
   snapshotTime: string;
   createdAt: string;
