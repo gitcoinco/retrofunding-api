@@ -6,33 +6,33 @@ import {
   type ProjectMetricsSnapshot,
   type SnapshotMetricKeys,
 } from '@/utils/types';
+import { env } from '@/env';
 
 export const applicationsIdToMetricsRegistryId = {
-  '0': '4juDfq8eT1mY8Mmg2p11BG4MlKIqxxFPVCj9bsvR6Ss=',
-  '1': 'WQZJlExc3O96r6BsnIIUKYRDxhqjta4keHGpWT3k5b0=',
-  '2': '4juDfq8eT1mY8Mmg2p11BG4MlKIqxxFPVCj9bsvR6Ss=',
-  '3': 'WQZJlExc3O96r6BsnIIUKYRDxhqjta4keHGpWT3k5b0=',
-  '4': '4juDfq8eT1mY8Mmg2p11BG4MlKIqxxFPVCj9bsvR6Ss=',
-  '5': 'WQZJlExc3O96r6BsnIIUKYRDxhqjta4keHGpWT3k5b0=',
-  '6': '4juDfq8eT1mY8Mmg2p11BG4MlKIqxxFPVCj9bsvR6Ss=',
-  '7': 'WQZJlExc3O96r6BsnIIUKYRDxhqjta4keHGpWT3k5b0=',
-  '8': '4juDfq8eT1mY8Mmg2p11BG4MlKIqxxFPVCj9bsvR6Ss=',
+  '0': '2Pi2+vR6tA5ntJH5x8g6/bOrc6pGDMraeNRxWJK27fU=',
+  '1': '4juDfq8eT1mY8Mmg2p11BG4MlKIqxxFPVCj9bsvR6Ss=',
+  '2': 'c/Fb+vkK+OeHREaBp5vCUL6lXNm1wOB02s7U+Ve5gdE=',
+  '3': 'kF+PqUr+BLkmB0T2MpFCjemhL+WmS7ggVJmBWULnbIM=',
+  '4': 'MbqGA89EGGqR9NEZUcBKBv0BKHU29TmqvbI2suxj518=',
+  '5': '+mENAM3J6TDvyHbcs555E/0HD1s+11nYGpK0kyd+ouE=',
+  '6': '+mENAM3J6TDvyHbcs555E/0HD1s+11nYGpK0kyd+ouE=',
+  '7': 'P8NO+ILp+KB5nLmDnqZJizv+ooHvKuJVX3qRrQ80xHs=',
+  '8': 'vwzM0N8WcT6WGLZaqOGlKKJtihOmTaPLk+NINu50JgY=',
   '9': 'WQZJlExc3O96r6BsnIIUKYRDxhqjta4keHGpWT3k5b0=',
-  '10': '4juDfq8eT1mY8Mmg2p11BG4MlKIqxxFPVCj9bsvR6Ss=',
-  '11': 'WQZJlExc3O96r6BsnIIUKYRDxhqjta4keHGpWT3k5b0=',
+  '10': 'Ze3WplcoRVxM/Fm2/NUE4FNq2sU6Zkl6OOoIY7H/aq4=',
+  '11': '2Pi2+vR6tA5ntJH5x8g6/bOrc6pGDMraeNRxWJK27fU=',
   '12': '4juDfq8eT1mY8Mmg2p11BG4MlKIqxxFPVCj9bsvR6Ss=',
-  '13': 'WQZJlExc3O96r6BsnIIUKYRDxhqjta4keHGpWT3k5b0=',
-  '14': '4juDfq8eT1mY8Mmg2p11BG4MlKIqxxFPVCj9bsvR6Ss=',
-  '15': 'WQZJlExc3O96r6BsnIIUKYRDxhqjta4keHGpWT3k5b0=',
-  '16': '4juDfq8eT1mY8Mmg2p11BG4MlKIqxxFPVCj9bsvR6Ss=',
-  '17': 'WQZJlExc3O96r6BsnIIUKYRDxhqjta4keHGpWT3k5b0=',
-  '18': '4juDfq8eT1mY8Mmg2p11BG4MlKIqxxFPVCj9bsvR6Ss=',
+  '13': 'c/Fb+vkK+OeHREaBp5vCUL6lXNm1wOB02s7U+Ve5gdE=',
+  '14': 'kF+PqUr+BLkmB0T2MpFCjemhL+WmS7ggVJmBWULnbIM=',
+  '15': 'MbqGA89EGGqR9NEZUcBKBv0BKHU29TmqvbI2suxj518=',
+  '16': '+mENAM3J6TDvyHbcs555E/0HD1s+11nYGpK0kyd+ouE=',
+  '17': 'P8NO+ILp+KB5nLmDnqZJizv+ooHvKuJVX3qRrQ80xHs=',
+  '18': 'vwzM0N8WcT6WGLZaqOGlKKJtihOmTaPLk+NINu50JgY=',
   '19': 'WQZJlExc3O96r6BsnIIUKYRDxhqjta4keHGpWT3k5b0=',
-  '20': '4juDfq8eT1mY8Mmg2p11BG4MlKIqxxFPVCj9bsvR6Ss=',
-  '21': 'WQZJlExc3O96r6BsnIIUKYRDxhqjta4keHGpWT3k5b0=',
+  '20': 'Ze3WplcoRVxM/Fm2/NUE4FNq2sU6Zkl6OOoIY7H/aq4=',
 };
 
-const hardcodedRoundId = '9921615e-7edd-4569-9b3f-785dcc3aac5e';
+const ROUND_ID = env.ROUND_ID ?? '09445988-cd06-4a90-9c3a-0766650a933f';
 
 const dateValueKeys = [
   'lastCommitDate',
@@ -44,9 +44,8 @@ const dateValueKeys = [
 export const getRoundSnapshots = async (
   roundId: string
 ): Promise<{ snapshots: ProjectMetricsSnapshot[] }> => {
-  console.log(roundId);
   const resp = await fetch(
-    `https://impact-metrics.vercel.app/api/oso/snapshots?roundId=${roundId}`
+    `https://impact-metrics.vercel.app/api/csv/snapshots?roundId=${roundId}`
   );
   const data = await resp.json();
   return data;
@@ -106,10 +105,9 @@ export const getApplicationMetrics = async (
   applicationMetrics: MetricFetcherResponse[];
   metricsBounds: MetricBounds;
 }> => {
-  console.log(roundId);
   const snapshots = await getApplicationsLatestSnapshot(
     applicationIds,
-    hardcodedRoundId
+    ROUND_ID
   );
   // Track valid values and invalid applications for each metric
   const validMetricValues: Record<string, number[]> = {};
