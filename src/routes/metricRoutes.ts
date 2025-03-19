@@ -10,6 +10,15 @@ const router = Router();
  *     tags:
  *       - metrics
  *     summary: Adds an array of metrics to the database
+ *     security:
+ *       - AdminApiKey: []
+ *     parameters:
+ *       - in: header
+ *         name: X-Admin-API-Key
+ *         schema:
+ *           type: string
+ *         required: true
+ *         description: Admin API key for authentication
  *     requestBody:
  *       required: true
  *       content:
@@ -70,6 +79,8 @@ const router = Router();
  *         description: Metrics added successfully
  *       400:
  *         description: Invalid input
+ *       401:
+ *         description: Unauthorized - Invalid or missing admin API key
  *       500:
  *         description: Internal server error
  */
@@ -82,6 +93,8 @@ router.post('/', addMetrics);
  *     tags:
  *       - metrics
  *     summary: Updates a metric
+ *     security:
+ *       - AdminApiKey: []
  *     parameters:
  *       - in: path
  *         name: identifier
@@ -90,6 +103,12 @@ router.post('/', addMetrics);
  *         schema:
  *           type: string
  *           example: "userEngagement"
+ *       - in: header
+ *         name: X-Admin-API-Key
+ *         schema:
+ *           type: string
+ *         required: true
+ *         description: Admin API key for authentication
  *     requestBody:
  *       required: true
  *       content:
@@ -106,6 +125,8 @@ router.post('/', addMetrics);
  *         description: Metric updated successfully
  *       400:
  *         description: Invalid input
+ *       401:
+ *         description: Unauthorized - Invalid or missing admin API key
  *       500:
  *         description: Internal server error
  */

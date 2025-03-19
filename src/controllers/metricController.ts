@@ -3,6 +3,7 @@ import metricService from '@/service/MetricService';
 import { catchError, validateRequest } from '@/utils';
 import { type Metric, MetricOrientation } from '@/entity/Metric';
 import { BadRequestError, IsNullError } from '@/errors';
+import { adminAuthMiddleware } from '@/controllers/adminAuthMiddleware';
 import { createLogger } from '@/logger';
 
 const logger = createLogger();
@@ -31,8 +32,7 @@ export const addMetrics = async (
   // Validate the incoming request
   validateRequest(req, res);
 
-  // TODO: ensure caller is admin
-
+  adminAuthMiddleware(req, res);
   const data = req.body as Metric[];
 
   // Combined validation to check if req.body is Metric[]
@@ -65,6 +65,8 @@ export const updateMetric = async (
 
   const identifier = req.params.identifier;
   const metric = req.body as Partial<Metric>;
+
+  adminAuthMiddleware(req, res);
 
   const [error, metrics] = await catchError(
     metricService.updateMetric(identifier, metric)
