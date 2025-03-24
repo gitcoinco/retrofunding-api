@@ -147,7 +147,7 @@ class IndexerClient {
         `Failed to fetch round with applications: ${error.message}`,
         { error }
       );
-      
+
       throw error;
     }
   }
