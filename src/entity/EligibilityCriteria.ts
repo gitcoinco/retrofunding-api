@@ -2,7 +2,7 @@ import { Entity, PrimaryGeneratedColumn, Column, Index } from 'typeorm';
 
 export enum EligibilityType {
   Linear = 'linear',
-  // Weighted = 'weighted',
+  Weighted = 'weighted',
 }
 
 @Entity()

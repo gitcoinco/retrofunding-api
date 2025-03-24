@@ -105,6 +105,13 @@ export const getApplicationMetrics = async (
   applicationMetrics: MetricFetcherResponse[];
   metricsBounds: MetricBounds;
 }> => {
+  if (applicationIds.length === 0) {
+    return {
+      applicationMetrics: [],
+      metricsBounds: {},
+    };
+  }
+
   const snapshots = await getApplicationsLatestSnapshot(
     applicationIds,
     ROUND_ID
