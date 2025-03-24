@@ -170,29 +170,50 @@ router.post('/calculate', calculateDistribution);
  *               alloPoolId:
  *                 type: string
  *                 description: The ID of the pool
- *                 example: "673"  # Example of poolId
+ *                 example: "673"
  *               chainId:
  *                 type: number
  *                 description: The chain ID associated with the pool
- *                 example: 11155111 # Example of chainId (Sepolia)
+ *                 example: 11155111
  *               eligibilityType:
  *                 type: string
  *                 description: The type of eligibility to check
- *                 example: "linear"  # Example of eligibilityType
+ *                 enum: ["linear", "weighted"]
+ *                 example: "linear"
  *               data:
  *                 type: object
  *                 description: The data for the eligibility criteria
- *                 example: { "voters": ["0xB8cEF765721A6da910f14Be93e7684e9a3714123", "0x5645bF145C3f1E974D0D7FB91bf3c68592ab5012"] }  # Example of data
  *             required:
  *               - alloPoolId
  *               - chainId
  *               - eligibilityType
  *               - data
+ *           examples:
+ *             linear:
+ *               summary: Linear eligibility example
+ *               value:
+ *                 signature: "0xdeadbeef"
+ *                 alloPoolId: "673"
+ *                 chainId: 11155111
+ *                 eligibilityType: "linear"
+ *                 data:
+ *                   voters: ["0xB8cEF765721A6da910f14Be93e7684e9a3714123", "0x5645bF145C3f1E974D0D7FB91bf3c68592ab5012"]
+ *             weighted:
+ *               summary: Weighted eligibility example
+ *               value:
+ *                 signature: "0xdeadbeef"
+ *                 alloPoolId: "673"
+ *                 chainId: 11155111
+ *                 eligibilityType: "weighted"
+ *                 data:
+ *                   voters: {"0xB8cEF765721A6da910f14Be93e7684e9a3714123": 75, "0x5645bF145C3f1E974D0D7FB91bf3c68592ab5012": 25}
  *     responses:
  *       200:
- *         description: Eligibility checked successfully
+ *         description: Eligibility criteria updated successfully
  *       400:
- *         description: Invalid eligibilityType, poolId, or chainId format
+ *         description: Invalid eligibilityType, poolId, chainId format, or data structure
+ *       401:
+ *         description: Unauthorized - invalid signature or not a pool manager
  *       500:
  *         description: Internal server error
  */

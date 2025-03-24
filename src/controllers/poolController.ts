@@ -72,7 +72,10 @@ export const createPool = async (
   );
 
   // Check if the eligibility type is supported
-  if (eligibilityType !== EligibilityType.Linear) {
+  if (
+    eligibilityType !== EligibilityType.Linear &&
+    eligibilityType !== EligibilityType.Weighted
+  ) {
     res.status(400).json({ message: 'Eligibility type not supported' });
     throw new BadRequestError('Eligibility type not supported');
   }
@@ -155,7 +158,7 @@ export const syncPool = async (req: Request, res: Response): Promise<void> => {
 
   // Update Applications
   // Update the pool with the applications from the indexer
-  await updateApplications(chainId, alloPoolId, indexerPoolData);
+  await updateApplications(chainId, alloPoolId, indexerPoolData, res);
 
   // Log success and respond to the request
   logger.info(
@@ -167,18 +170,30 @@ export const syncPool = async (req: Request, res: Response): Promise<void> => {
 const updateApplications = async (
   chainId: number,
   alloPoolId: string,
-  indexerPoolData: IndexerRoundWithApplications
+  indexerPoolData: IndexerRoundWithApplications,
+  res: Response
 ): Promise<void> => {
   const applicationData = indexerPoolData.applications.map(application => ({
     alloApplicationId: application.id,
     profileId: application.projectId,
   }));
 
-  await applicationService.upsertApplicationsForPool(
-    alloPoolId,
-    chainId,
-    applicationData
+  const [error] = await catchError(
+    applicationService.upsertApplicationsForPool(
+      alloPoolId,
+      chainId,
+      applicationData
+    )
   );
+
+  if (error !== undefined) {
+    logger.error(`Failed to upsert applications: ${error?.message}`);
+    res.status(500).json({
+      message: 'Error upserting applications',
+      error: error?.message,
+    });
+    throw new ServerError(`Failed to upsert applications`);
+  }
 };
 
 /**
