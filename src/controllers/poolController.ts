@@ -219,7 +219,11 @@ export const calculateDistribution = async (req, res): Promise<void> => {
   }
 
   const [errorUpdating, updatedDistribution] = await catchError(
-    poolService.updateDistribution(alloPoolId, chainId, distribution)
+    poolService.updateDistribution(
+      alloPoolId,
+      chainId,
+      distribution as unknown as Distribution[]
+    )
   );
 
   if (errorUpdating !== undefined || updatedDistribution === undefined) {
