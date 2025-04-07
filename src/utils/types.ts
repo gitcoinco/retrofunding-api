@@ -28,13 +28,21 @@ export interface ProjectMetricsSnapshot {
     timeToMergeDaysAverage6Months: number;
     fulltimeDeveloperAverage6Months: number;
     timeToFirstResponseDaysAverage6Months: number;
+    // GMV Growth
     gmv_growth: number;
+    // Donor Growth
     unique_donor_growth: number;
+    // Donor Retention
     donor_retention_rate: number;
+    // Developer Retention (Avg. Dev. Months)
     developer_retention_rate: number;
+    // No. of Community Rounds Participated In
     scaling_community_rounds: number;
+    // No. of Active Developers
     current_active_developers: number;
+    // Avg. No. of Projects Supported Per Donor
     network_contribution_score: number;
+    // No. of Contributors Onboarded
     contributor_onboarding_rate: number;
   };
   snapshotTime: string;
