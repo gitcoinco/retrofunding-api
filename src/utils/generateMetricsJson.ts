@@ -24,7 +24,7 @@ records.forEach((record: Record<string, string>) => {
   // Create metrics object with the relevant fields
   const metrics: Partial<ProjectMetricsSnapshot['value']> = {
     gmv_growth: parseFloat(
-      record.gmv_growth.replace('$', '').replace(',', '.').replace(' ', '')
+      record.gmv_growth.replace('$', '').replace(',', '').replace(' ', '')
     ),
     unique_donor_growth: parseFloat(record.unique_donor_growth),
     donor_retention_rate: parseFloat(record.donor_retention_rate),
