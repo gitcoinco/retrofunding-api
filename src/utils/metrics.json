@@ -1,0 +1,312 @@
+{
+  "0": {
+    "gmv_growth": 27.932,
+    "unique_donor_growth": 2849,
+    "donor_retention_rate": 1272,
+    "developer_retention_rate": 16,
+    "scaling_community_rounds": 1,
+    "current_active_developers": 1,
+    "network_contribution_score": 18,
+    "contributor_onboarding_rate": 1
+  },
+  "1": {
+    "gmv_growth": 74.703,
+    "unique_donor_growth": 3301,
+    "donor_retention_rate": 379,
+    "developer_retention_rate": 17.8,
+    "scaling_community_rounds": 1,
+    "current_active_developers": 2,
+    "network_contribution_score": 24,
+    "contributor_onboarding_rate": 0
+  },
+  "2": {
+    "gmv_growth": 59.815,
+    "unique_donor_growth": 18376,
+    "donor_retention_rate": 7083,
+    "developer_retention_rate": 9.8,
+    "scaling_community_rounds": 2,
+    "current_active_developers": 2,
+    "network_contribution_score": 11,
+    "contributor_onboarding_rate": 2
+  },
+  "3": {
+    "gmv_growth": 77.887,
+    "unique_donor_growth": 1774,
+    "donor_retention_rate": 143,
+    "developer_retention_rate": 9.8,
+    "scaling_community_rounds": 2,
+    "current_active_developers": 7,
+    "network_contribution_score": 25,
+    "contributor_onboarding_rate": 6
+  },
+  "4": {
+    "gmv_growth": 23.237,
+    "unique_donor_growth": 4186,
+    "donor_retention_rate": 982,
+    "developer_retention_rate": 16.1,
+    "scaling_community_rounds": 3,
+    "current_active_developers": 1,
+    "network_contribution_score": 21,
+    "contributor_onboarding_rate": 0
+  },
+  "5": {
+    "gmv_growth": 14.673,
+    "unique_donor_growth": 875,
+    "donor_retention_rate": 92,
+    "developer_retention_rate": 4.5,
+    "scaling_community_rounds": 2,
+    "current_active_developers": 5,
+    "network_contribution_score": 27,
+    "contributor_onboarding_rate": 0
+  },
+  "6": {
+    "gmv_growth": 35.079,
+    "unique_donor_growth": 2060,
+    "donor_retention_rate": 154,
+    "developer_retention_rate": 7.5,
+    "scaling_community_rounds": 1,
+    "current_active_developers": 11,
+    "network_contribution_score": 26,
+    "contributor_onboarding_rate": 3
+  },
+  "7": {
+    "gmv_growth": 37.402,
+    "unique_donor_growth": 1292,
+    "donor_retention_rate": 118,
+    "developer_retention_rate": 12.4,
+    "scaling_community_rounds": 5,
+    "current_active_developers": 8,
+    "network_contribution_score": 24,
+    "contributor_onboarding_rate": 3
+  },
+  "8": {
+    "gmv_growth": 59.815,
+    "unique_donor_growth": 15296,
+    "donor_retention_rate": 5861,
+    "developer_retention_rate": 18.1,
+    "scaling_community_rounds": 1,
+    "current_active_developers": 1,
+    "network_contribution_score": 13,
+    "contributor_onboarding_rate": 0
+  },
+  "9": {
+    "gmv_growth": 87.21,
+    "unique_donor_growth": 12748,
+    "donor_retention_rate": 3595,
+    "developer_retention_rate": 14.6,
+    "scaling_community_rounds": 1,
+    "current_active_developers": 14,
+    "network_contribution_score": 14,
+    "contributor_onboarding_rate": 3
+  },
+  "10": {
+    "gmv_growth": 15.988,
+    "unique_donor_growth": 1420,
+    "donor_retention_rate": 228,
+    "developer_retention_rate": 12,
+    "scaling_community_rounds": 0,
+    "current_active_developers": 1,
+    "network_contribution_score": 21,
+    "contributor_onboarding_rate": 1
+  },
+  "11": {
+    "gmv_growth": 10.037,
+    "unique_donor_growth": 346,
+    "donor_retention_rate": 15,
+    "developer_retention_rate": 9,
+    "scaling_community_rounds": 2,
+    "current_active_developers": 7,
+    "network_contribution_score": 29,
+    "contributor_onboarding_rate": 7
+  },
+  "12": {
+    "gmv_growth": 14.975,
+    "unique_donor_growth": 1684,
+    "donor_retention_rate": 49,
+    "developer_retention_rate": 16.8,
+    "scaling_community_rounds": 1,
+    "current_active_developers": 1,
+    "network_contribution_score": 26,
+    "contributor_onboarding_rate": 0
+  },
+  "13": {
+    "gmv_growth": 17.893,
+    "unique_donor_growth": 297,
+    "donor_retention_rate": 34,
+    "developer_retention_rate": 4.1,
+    "scaling_community_rounds": 4,
+    "current_active_developers": 3,
+    "network_contribution_score": 37,
+    "contributor_onboarding_rate": 3
+  },
+  "14": {
+    "gmv_growth": 15.056,
+    "unique_donor_growth": 2791,
+    "donor_retention_rate": 327,
+    "developer_retention_rate": 11.5,
+    "scaling_community_rounds": 0,
+    "current_active_developers": 8,
+    "network_contribution_score": 18,
+    "contributor_onboarding_rate": 4
+  },
+  "15": {
+    "gmv_growth": 80.64,
+    "unique_donor_growth": 5247,
+    "donor_retention_rate": 1325,
+    "developer_retention_rate": 12.3,
+    "scaling_community_rounds": 0,
+    "current_active_developers": 8,
+    "network_contribution_score": 21,
+    "contributor_onboarding_rate": 3
+  },
+  "16": {
+    "gmv_growth": 29.75,
+    "unique_donor_growth": 3854,
+    "donor_retention_rate": 237,
+    "developer_retention_rate": 7,
+    "scaling_community_rounds": 0,
+    "current_active_developers": 4,
+    "network_contribution_score": 22,
+    "contributor_onboarding_rate": 2
+  },
+  "17": {
+    "gmv_growth": 60.766,
+    "unique_donor_growth": 3880,
+    "donor_retention_rate": 263,
+    "developer_retention_rate": 12.4,
+    "scaling_community_rounds": 2,
+    "current_active_developers": 25,
+    "network_contribution_score": 20,
+    "contributor_onboarding_rate": 14
+  },
+  "18": {
+    "gmv_growth": 20.931,
+    "unique_donor_growth": 2241,
+    "donor_retention_rate": 96,
+    "developer_retention_rate": 7.3,
+    "scaling_community_rounds": 0,
+    "current_active_developers": 7,
+    "network_contribution_score": 30,
+    "contributor_onboarding_rate": 4
+  },
+  "19": {
+    "gmv_growth": 7.228,
+    "unique_donor_growth": 519,
+    "donor_retention_rate": 44,
+    "developer_retention_rate": 14.1,
+    "scaling_community_rounds": 1,
+    "current_active_developers": 3,
+    "network_contribution_score": 24,
+    "contributor_onboarding_rate": 1
+  },
+  "20": {
+    "gmv_growth": 65.514,
+    "unique_donor_growth": 5484,
+    "donor_retention_rate": 523,
+    "developer_retention_rate": 10.2,
+    "scaling_community_rounds": 0,
+    "current_active_developers": 23,
+    "network_contribution_score": 23,
+    "contributor_onboarding_rate": 9
+  },
+  "21": {
+    "gmv_growth": 21.321,
+    "unique_donor_growth": 3909,
+    "donor_retention_rate": 168,
+    "developer_retention_rate": 10.3,
+    "scaling_community_rounds": 3,
+    "current_active_developers": 4,
+    "network_contribution_score": 26,
+    "contributor_onboarding_rate": 3
+  },
+  "22": {
+    "gmv_growth": 68.591,
+    "unique_donor_growth": 3091,
+    "donor_retention_rate": 414,
+    "developer_retention_rate": 18,
+    "scaling_community_rounds": 1,
+    "current_active_developers": 1,
+    "network_contribution_score": 25,
+    "contributor_onboarding_rate": 0
+  },
+  "23": {
+    "gmv_growth": 33.529,
+    "unique_donor_growth": 2210,
+    "donor_retention_rate": 213,
+    "developer_retention_rate": 8.6,
+    "scaling_community_rounds": 5,
+    "current_active_developers": 25,
+    "network_contribution_score": 28,
+    "contributor_onboarding_rate": 10
+  },
+  "24": {
+    "gmv_growth": 34.179,
+    "unique_donor_growth": 5339,
+    "donor_retention_rate": 373,
+    "developer_retention_rate": 14.3,
+    "scaling_community_rounds": 0,
+    "current_active_developers": 2,
+    "network_contribution_score": 15,
+    "contributor_onboarding_rate": 2
+  },
+  "25": {
+    "gmv_growth": 36.634,
+    "unique_donor_growth": 3565,
+    "donor_retention_rate": 248,
+    "developer_retention_rate": 7.7,
+    "scaling_community_rounds": 0,
+    "current_active_developers": 17,
+    "network_contribution_score": 24,
+    "contributor_onboarding_rate": 15
+  },
+  "26": {
+    "gmv_growth": 94.956,
+    "unique_donor_growth": 7982,
+    "donor_retention_rate": 1944,
+    "developer_retention_rate": 8.6,
+    "scaling_community_rounds": 0,
+    "current_active_developers": 34,
+    "network_contribution_score": 18,
+    "contributor_onboarding_rate": 28
+  },
+  "27": {
+    "gmv_growth": 42.154,
+    "unique_donor_growth": 8290,
+    "donor_retention_rate": 3364,
+    "developer_retention_rate": 8.8,
+    "scaling_community_rounds": 0,
+    "current_active_developers": 5,
+    "network_contribution_score": 16,
+    "contributor_onboarding_rate": 2
+  },
+  "28": {
+    "gmv_growth": 17.893,
+    "unique_donor_growth": 100,
+    "donor_retention_rate": 10,
+    "developer_retention_rate": 16.1,
+    "scaling_community_rounds": 1,
+    "current_active_developers": 1,
+    "network_contribution_score": 37,
+    "contributor_onboarding_rate": 0
+  },
+  "29": {
+    "gmv_growth": 10.169,
+    "unique_donor_growth": 2780,
+    "donor_retention_rate": 184,
+    "developer_retention_rate": 6.2,
+    "scaling_community_rounds": 1,
+    "current_active_developers": 4,
+    "network_contribution_score": 24,
+    "contributor_onboarding_rate": 2
+  },
+  "30": {
+    "gmv_growth": 12.796,
+    "unique_donor_growth": 2255,
+    "donor_retention_rate": 102,
+    "developer_retention_rate": 12.2,
+    "scaling_community_rounds": 0,
+    "current_active_developers": 9,
+    "network_contribution_score": 23,
+    "contributor_onboarding_rate": 1
+  }
+}
