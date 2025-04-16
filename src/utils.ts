@@ -48,7 +48,7 @@ export async function recoverSignerAddress<T>(
   signature: Hex
 ): Promise<Hex> {
   return await recoverMessageAddress({
-    message: await deterministicKeccakHash(obj),
+    message: { raw: await deterministicKeccakHash(obj) },
     signature,
   });
 }
